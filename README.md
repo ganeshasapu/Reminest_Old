@@ -18,4 +18,5 @@
 Basic login credentials:
 
 email: test@gmail.com
+
 password: password
