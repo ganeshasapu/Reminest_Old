@@ -12,7 +12,6 @@ const SkipBar = () => {
             <View style={localStyles.barContainer}>
                 <TouchableOpacity
                     onPress={() => {
-                        console.log("skip");
                         router.push(
                             "(screens)/(initializations)/initialization1"
                         );

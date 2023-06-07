@@ -1,22 +1,40 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../constants/Colors";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import ADIcon from "@expo/vector-icons/AntDesign";
 import { hexToRGBA } from "../utility/hexToRGBA";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import LogoBackgroundFaded from "../assets/vectors/LogoBackgroundFaded";
 
-const baseRoute = "(screens)/(previews)/";
-const routes = ["preview1", "preview2", "preview3"]
+const baseRoute = "(screens)/(initializations)/";
+const routes = [
+    "initialization1",
+    "initialization2",
+    "initialization3",
+    "initialization4",
+    "initialization5",
+];
 
-const PreviewScreenNav = () => {
+const InitializationScreenNav = () => {
     const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
+
+    const pathName = usePathname();
+
+    useEffect(() => {
+        if (pathName === "/initialization2") {
+            setCurrentRouteIndex(1);
+        }
+        if (pathName === "/initialization4") {
+            setCurrentRouteIndex(3);
+        }
+    }, [pathName]);
 
     const router = useRouter();
 
     const previous = () => {
         if (currentRouteIndex > 0) {
             setCurrentRouteIndex(currentRouteIndex - 1);
-            router.push(baseRoute + routes[currentRouteIndex - 1])
+            router.push(baseRoute + routes[currentRouteIndex - 1]);
         }
     };
 
@@ -27,11 +45,26 @@ const PreviewScreenNav = () => {
         }
     };
 
-
     return (
         <View style={styles.buttonGroupContainer}>
             <View style={styles.buttonGroup}>
-                {currentRouteIndex != 0 ? (
+                {currentRouteIndex == 0 ? (
+                    <View style={{ width: 65, height: 65 }} />
+                ) : currentRouteIndex == 4 ? (
+                    <TouchableOpacity
+                        onPress={previous}
+                        style={[
+                            styles.navigationButton,
+                            {
+                                backgroundColor: hexToRGBA(Colors.blue, 0.5),
+                                width: 45,
+                                height: 45,
+                            },
+                        ]}
+                    >
+                        <ADIcon name="arrowleft" size={30} color="#fff" />
+                    </TouchableOpacity>
+                ) : (
                     <TouchableOpacity
                         onPress={previous}
                         style={[
@@ -41,10 +74,20 @@ const PreviewScreenNav = () => {
                     >
                         <ADIcon name="arrowleft" size={30} color="#fff" />
                     </TouchableOpacity>
-                ) : (
-                    <View />
                 )}
-                {currentRouteIndex != routes.length - 1 ? (
+                {currentRouteIndex != 0 ? (
+                    <View
+                        style={{
+                            position: "absolute",
+                            left: "40%",
+                            bottom: "5%",
+                        }}
+                    >
+                        <LogoBackgroundFaded width={80} height={80} />
+                    </View>
+                ) : null}
+                {currentRouteIndex != routes.length - 1 &&
+                currentRouteIndex != 0 ? (
                     <TouchableOpacity
                         onPress={next}
                         style={[
@@ -55,22 +98,14 @@ const PreviewScreenNav = () => {
                         <ADIcon name="arrowright" size={30} color="#fff" />
                     </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity
-                        onPress={() => router.push("(screens)/(initializations)/initialization1")}
-                        style={[
-                            styles.navigationButton,
-                            { backgroundColor: Colors.blue },
-                        ]}
-                    >
-                        <ADIcon name="arrowright" size={30} color="#fff" />
-                    </TouchableOpacity>
+                    <View style={{ width: 65, height: 65 }} />
                 )}
             </View>
         </View>
     );
 };
 
-export default PreviewScreenNav;
+export default InitializationScreenNav;
 
 const styles = StyleSheet.create({
     buttonGroup: {
@@ -98,13 +133,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
     },
     buttonGroupContainer: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 36,
         zIndex: -1,
         backgroundColor: Colors.background,
         paddingBottom: 36,
+        paddingHorizontal: 20,
         width: "100%",
     },
 });

@@ -1,55 +1,42 @@
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { Button, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Camera, CameraType } from "expo-camera";
 import Colors from '../../constants/Colors';
+import { FirebaseContext } from '../auth';
 
 const home = () => {
   const router = useRouter()
+  const { user, logoutUser } = useContext(FirebaseContext);
 
-  const [type, setType] = useState(CameraType.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-
-  if (!permission) {
-      // Camera permissions are still loading
-      return <View />;
-  }
-
-  if (!permission.granted) {
-      // Camera permissions are not granted yet
-      return (
-          <View style={styles.outerContainer}>
-              <Text style={{ textAlign: "center" }}>
-                  We need your permission to show the camera
-              </Text>
-              <Button onPress={requestPermission} title="grant permission" />
-          </View>
-      );
-  }
 
   return (
       <View style={styles.outerContainer}>
-          <Camera style={styles.camera}>
-              <View style={styles.innerContainer}>
-                  <Text style={styles.text}>home</Text>
-                  <Button
-                      title="Go to preview1"
-                      onPress={() => {
-                          router.push("(screens)/(previews)/preview1");
-                      }}
-                  />
-                  <Button
-                      title="Go to Initialization4"
-                      onPress={() => {
-                          router.push(
-                              "(screens)/(initializations)/initialization4"
-                          );
-                      }}
-                  />
-                  <TouchableOpacity style={styles.pictureButton} />
-
-              </View>
-          </Camera>
+            <View style={styles.innerContainer}>
+                <Text style={styles.text}>Welcome {user?.email}</Text>
+                <Button
+                    title="Go to preview1"
+                    onPress={() => {
+                        router.push("(screens)/(previews)/preview1");
+                    }}
+                />
+                <Button
+                    title="Go to Initialization2"
+                    onPress={() => {
+                        router.push(
+                            "(screens)/(initializations)/initialization2"
+                        );
+                    }}
+                />
+                <TouchableOpacity style={styles.pictureButton} />
+                <Button title="Sign out" onPress={logoutUser} />
+                <Button
+                    title="Go to Camera Page"
+                    onPress={() => {
+                        router.push("(screens)/camera");
+                    }}
+                />
+            </View>
       </View>
   );
 }

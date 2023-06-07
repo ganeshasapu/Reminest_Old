@@ -3,7 +3,6 @@ import { SvgProps } from "react-native-svg";
 
 export default function LogoDark(props: SvgProps) {
 
-    console.log(props)
     return (
         <Svg
             fill="none"

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View, Button} from 'react-native'
 import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, setDoc, doc} from 'firebase/firestore';
 import { auth, db } from '../../firebase';
 
 const register = () => {
@@ -14,15 +14,14 @@ const register = () => {
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
-            console.log(user);
 
             const userData = {
                 email: user.email,
-                uid: user.uid,
             };
 
-            const usersRef = collection(db, "users");
-            addDoc(usersRef, userData)
+            const usersCollectionRef = collection(db, "users");
+
+            setDoc(doc(usersCollectionRef, user.uid), userData); //Creates a new document with the user's uid as the document id
         })
         .catch((error) => {
             console.log(error);

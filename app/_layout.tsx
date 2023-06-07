@@ -1,7 +1,8 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack, Slot, Navigator } from "expo-router";
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { FirebaseProvider } from './auth';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,11 +41,14 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+
   return (
       <>
-          <Navigator initialRouteName="(screens)/(auth)/login">
-                <Slot />
-          </Navigator>
+          <FirebaseProvider>
+              <Navigator initialRouteName="(screens)/(previews)/preview1">
+                  <Slot />
+              </Navigator>
+          </FirebaseProvider>
       </>
   );
 }

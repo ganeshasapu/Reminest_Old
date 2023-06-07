@@ -1,8 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import Colors from '../../../constants/Colors';
-import FAIcon from '@expo/vector-icons/FontAwesome';
+import { styles } from '../../stylesheets/styles';
+import BasicInput from '../../../components/BasicInput';
+import ProfileBorder from '../../../assets/vectors/ProfileBorder';
 
 const initialization4 = () => {
     const [familyName, setFamilyName] = useState("");
@@ -23,46 +25,82 @@ const initialization4 = () => {
     };
 
   return (
-      <View style={styles.container}>
-          <Text style={styles.text}>initialization4</Text>
-          <Image
-              source={require("../../../assets/images/icon.png")}
-              style={{ width: 100, height: 100, borderRadius: 50 }}
-          />
-          <Text style={styles.text}>Welcome</Text>
-          <Text style={styles.bigText}>{name}</Text>
-          <Text style={styles.text}>What's Your Family Name?</Text>
-          <TextInput
-              style={styles.input}
-              onChangeText={setFamilyName}
-              value={familyName}
-              autoCapitalize="none"
-              placeholder="Start typing..."
-              placeholderTextColor={"#000"}
-          ></TextInput>
-          <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                  onPress={previous}
-                  style={[styles.navigationButton, { opacity: 0.5 }]}
-              >
-                  <FAIcon name="angle-left" size={30} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={next} style={styles.navigationButton}>
-                  <FAIcon name="angle-right" size={30} color="#fff" />
-              </TouchableOpacity>
+      <View
+          style={[
+              styles.mainContainer,
+              {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+              },
+          ]}
+      >
+          <View
+              style={{
+                  position: "absolute",
+                  left: "26%",
+                  top: "20%",
+                  width: "100%",
+                  height: "40%",
+              }}
+          >
+              <ProfileBorder width={200} height={200} />
+              <Image
+                  source={require("../../../assets/images/icon.png")}
+                  style={{
+                      width: 125,
+                      height: 125,
+                      borderRadius: 67.5,
+                      position: "absolute",
+                      left: "11%",
+                      top: "12.5%",
+                  }}
+              />
           </View>
+          <View style={localStyles.emptySpace} />
+          <View style={localStyles.textContainer}>
+              <Text style={[styles.text, { paddingBottom: 5 }]}>Welcome</Text>
+              <Text style={styles.titletext}>{name}</Text>
+          </View>
+          <KeyboardAvoidingView
+              behavior="padding"
+              keyboardVerticalOffset={160}
+              style={localStyles.inputContainer}
+          >
+              <Text style={styles.text}>What's Your Family Name?</Text>
+              <BasicInput
+                  changeTextHandler={setFamilyName}
+                  value={familyName}
+              />
+          </KeyboardAvoidingView>
       </View>
   );
 }
 
 export default initialization4
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#222",
+    },
+    textContainer: {
+        position: "absolute",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        top: "45%",
+        width: "100%",
+        height: "20%",
+    },
+    inputContainer: {
+        width: "100%",
+        paddingTop: "17.5%",
+    },
+    emptySpace: {
+        height: "70%",
     },
     bigText: {
         fontSize: 30,

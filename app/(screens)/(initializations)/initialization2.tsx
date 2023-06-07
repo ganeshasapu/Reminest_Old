@@ -1,11 +1,13 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Colors from '../../../constants/Colors'
-import FAIcon from '@expo/vector-icons/FontAwesome'
 import ADIcon from "@expo/vector-icons/AntDesign";
 import { useRouter } from 'expo-router'
-
-
+import ProfileBorder from '../../../assets/vectors/ProfileBorder';
+import { styles } from '../../stylesheets/styles';
+import LogoDark from '../../../assets/vectors/LogoDark';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BasicInput from '../../../components/BasicInput';
 
 
 const initialization2 = () => {
@@ -25,14 +27,6 @@ const initialization2 = () => {
 
     const [familyOptions, setFamilyOptions] = React.useState(initialFamilyOptions);
 
-    const next = () => {
-        router.push({pathname: "(screens)/(initializations)/initialization3", params: {name: name}});
-    };
-
-    const previous = () => {
-        router.push("(screens)/(initializations)/initialization1");
-    };
-
     const toggleFamilyOption = (title: string) => {
         const newFamilyOptions = familyOptions.map((option) => {
             if (option.title === title) {
@@ -48,27 +42,46 @@ const initialization2 = () => {
 
 
   return (
-      <View style={styles.container}>
-          <Text style={styles.text}>initialization2</Text>
-          <Text style={styles.bigText}>Build Your Profile</Text>
-          <TouchableOpacity style={styles.uploadButton}>
-              <ADIcon name="upload" size={10} color="#fff" />
-              <Text style={styles.buttonText}>Upload Image</Text>
-          </TouchableOpacity>
-          <Text style={styles.text}>What's Your Name?</Text>
-          <TextInput
-              style={styles.input}
-              onChangeText={setName}
-              value={name}
-              autoCapitalize="none"
-              placeholder="Start typing..."
-              placeholderTextColor={"#000"}
-          ></TextInput>
-          <View style={styles.optionsContainer}>
+      <SafeAreaView style={[styles.mainContainer]}>
+          <LogoDark width={35} height={40} />
+          <Text style={[styles.titletext, { paddingTop: "10%" }]}>
+              Build Your Profile
+          </Text>
+
+          <View
+              style={{
+                  position: "absolute",
+                  left: "35%",
+                  top: "35%",
+                  width: "100%",
+                  height: "40%",
+              }}
+          >
+              <ProfileBorder width={150} height={150} />
+              <View style={localStyles.uploadButtonContainer}>
+                  <TouchableOpacity style={localStyles.uploadButton}>
+                      <ADIcon name="upload" size={15} color="#fff" />
+                      <Text style={localStyles.uploadButtonText}>
+                          Upload Image
+                      </Text>
+                  </TouchableOpacity>
+              </View>
+          </View>
+          <View style={localStyles.emptySpacing} />
+          <View style={localStyles.inputContainer}>
+              <Text style={[styles.text]}>What's Your Name?</Text>
+              <BasicInput
+                  changeTextHandler={setName}
+                  value={name}
+                  style={{ marginTop: 5 }}
+              ></BasicInput>
+          </View>
+          <Text style={[styles.text, {marginTop: 20, marginBottom: 10}]}>Select All That Apply:</Text>
+          <View style={localStyles.optionsContainer}>
               {familyOptions.map((option) => (
                   <TouchableOpacity
                       style={[
-                          styles.familyCodeButton,
+                          localStyles.familyCodeButton,
                           { opacity: option.selected ? 1 : 0.5 },
                       ]}
                       key={option.title}
@@ -76,53 +89,84 @@ const initialization2 = () => {
                           toggleFamilyOption(option.title);
                       }}
                   >
-                      <Text style={styles.familyOptionText}>
+                      <Text style={localStyles.familyOptionText}>
                           {option.title}
                       </Text>
                   </TouchableOpacity>
               ))}
           </View>
-          <View style={styles.buttonGroup}>
+          {/*
+
+          <View style={localStyles.optionsContainer}>
+              {familyOptions.map((option) => (
+                  <TouchableOpacity
+                      style={[
+                          localStyles.familyCodeButton,
+                          { opacity: option.selected ? 1 : 0.5 },
+                      ]}
+                      key={option.title}
+                      onPress={() => {
+                          toggleFamilyOption(option.title);
+                      }}
+                  >
+                      <Text style={localStyles.familyOptionText}>
+                          {option.title}
+                      </Text>
+                  </TouchableOpacity>
+              ))}
+          </View>
+          <View style={localStyles.buttonGroup}>
               <TouchableOpacity
                   onPress={previous}
-                  style={[styles.navigationButton, { opacity: 0.5 }]}
+                  style={[localStyles.navigationButton, { opacity: 0.5 }]}
               >
                   <FAIcon name="angle-left" size={30} color="#fff" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={next} style={styles.navigationButton}>
+              <TouchableOpacity
+                  onPress={next}
+                  style={localStyles.navigationButton}
+              >
                   <FAIcon name="angle-right" size={30} color="#fff" />
               </TouchableOpacity>
-          </View>
-      </View>
+          </View> */}
+      </SafeAreaView>
   );
 }
 
 export default initialization2
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#222",
     },
-    bigText: {
-        fontSize: 30,
-        color: "#fff",
-    },
-    text: {
-        fontSize: 20,
-        color: "#fff",
+    inputContainer: {
+        width: "100%",
     },
     uploadButton: {
         backgroundColor: Colors.blue,
-        padding: 10,
-        borderRadius: 37,
-        width: 75,
-        height: 75,
+        borderRadius: 50,
+        width: 90,
+        height: 90,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+    },
+    emptySpacing: {
+        height: "35%",
+    },
+    uploadButtonText: {
+        color: "#fff",
+        fontSize: 14,
+        textAlign: "center",
+        fontFamily: "open-sans",
+    },
+    uploadButtonContainer: {
+        position: "absolute",
+        left: "8.5%",
+        top: "11%",
     },
     navigationButton: {
         backgroundColor: Colors.blue,
@@ -170,13 +214,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "center",
     },
-    optionsContainer:{
+    optionsContainer: {
         width: "80%",
         display: "flex",
         flexDirection: "row",
         flexWrap: "wrap",
         rowGap: 10,
         gap: 5,
-    }
+    },
 });
 

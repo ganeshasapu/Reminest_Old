@@ -1,39 +1,16 @@
 import { StyleSheet, Text, TextInput, View, Button } from "react-native";
-import { useEffect, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "expo-router";
+import { useContext, useEffect, useState } from "react";
+import { FirebaseContext } from "../../auth";
+
 
 const Login = () => {
     const [email, onChangeEmail] = useState("");
     const [password, onSetPassword] = useState("");
 
-    const router = useRouter();
+    const { loginUser, loading } = useContext(FirebaseContext);
 
-    useEffect(() => {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          console.log(user);
-          // Navigate to the home screen or perform any other actions
-          router.push("(screens)/home");
-        }
-      });
-    }
-    , []);
-
-    const login = () => {
-        console.log(email, password);
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                console.log(user);
-                // Navigate to the home screen or perform any necessary action after successful login
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    const handleLogin = () => {
+        loginUser(email, password);
     };
 
     return (
@@ -54,7 +31,7 @@ const Login = () => {
                 value={password}
                 placeholder="Password"
             />
-            <Button title="Login" onPress={login} />
+            <Button title="Login" onPress={handleLogin} disabled={loading} />
         </View>
     );
 };

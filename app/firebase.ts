@@ -1,20 +1,29 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
+
+import Constants from "expo-constants";
+
+if (!Constants || !Constants.manifest || !Constants.manifest.extra) {
+    throw new Error("Missing firebase config");
+}
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCER2mhUl49XE7a-w7sjDz70qKlgTWSQtQ",
-  authDomain: "reminest-4bec7.firebaseapp.com",
-  projectId: "reminest-4bec7",
-  storageBucket: "reminest-4bec7.appspot.com",
-  messagingSenderId: "921454811246",
-  appId: "1:921454811246:web:4bb969b2ee9028ebbf2e7f",
-  measurementId: "G-S99XFYR337",
+    apiKey: Constants.manifest.extra.FIREBASE_API_KEY,
+    authDomain: Constants.manifest.extra.FIREBASE_AUTH_DOMAIN,
+    projectId: Constants.manifest.extra.FIREBASE_PROJECT_ID,
+    storageBucket: Constants.manifest.extra.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: Constants.manifest.extra.FIREBASE_MESSAGING_SENDER_ID,
+    appId: Constants.manifest.extra.FIREBASE_APP_ID,
+    measurementId: Constants.manifest.extra.FIREBASE_MEASUREMENT_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp)
 
-export { auth, firebaseApp, db };
+export { auth, firebaseApp, db, storage };
 

@@ -1,98 +1,133 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import Colors from '../../../constants/Colors';
+import {
+    KeyboardAvoidingView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import React, { useState } from "react";
+import Colors from "../../../constants/Colors";
 import Icon from "@expo/vector-icons/FontAwesome";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import { styles } from "../../stylesheets/styles";
+import BasicInput from "../../../components/BasicInput";
+import LogoBackgroundFaded from "../../../assets/vectors/LogoBackgroundFaded";
 
-const initialization1 = () => {
-    const [familyCode, onChangeFamilyCode] = useState("");
+
+const initialization1 = ({ }: any) => {
+    const [familyCode, onChangeFamilyCode] = useState<string>("");
 
     const router = useRouter();
     const createFamily = () => {
         router.push("(screens)/(initializations)/initialization2");
     };
 
-  return (
-      <View style={styles.container}>
-          <Text style={styles.text}>initialization1</Text>
-          <View style={styles.bigTextContainer}>
-              <Text style={styles.bigText}>
-                  Start recording your family stories today
-              </Text>
-          </View>
-          <Text style={styles.text}>Have a family code?</Text>
-          <TextInput
-              style={styles.input}
-              onChangeText={onChangeFamilyCode}
-              value={familyCode}
-              autoCapitalize="none"
-              placeholder="Start typing..."
-              placeholderTextColor={"#000"}
-          ></TextInput>
-          <Text style={styles.text}>Don't Have One?</Text>
-          <TouchableOpacity
-              style={styles.familyCodeButton}
-              onPress={createFamily}
-          >
-              <View style={styles.innerButtonContainer}>
-                  <Text style={styles.buttonText}>Create New Family</Text>
-                  <Icon name="send" size={20} color="#fff" />
-              </View>
-          </TouchableOpacity>
+    const handleFamilyCodeChange = (inputText: string) => {
+        onChangeFamilyCode(inputText);
+    };
 
-      </View>
-  );
-}
+    return (
+        <View
+            style={[
+                styles.mainContainer,
+                {
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                },
+            ]}
+        >
+            <View
+                style={{
+                    position: "absolute",
+                    left: "10%",
+                    top: "20%",
+                    width: "100%",
+                    height: "40%",
+                }}
+            >
+                <View style={{ position: "absolute", left: "0%", top: "0%" }}>
+                    <LogoBackgroundFaded width={325} height={325} />
+                </View>
+                <View style={localStyles.bigTextContainer}>
+                    <Text style={[styles.titletext, { textAlign: "center" }]}>
+                        Start recording your family stories today
+                    </Text>
+                </View>
+            </View>
+            <View style={localStyles.emptySpacing} />
+            <KeyboardAvoidingView
+                style={localStyles.inputContainer}
+                keyboardVerticalOffset={50}
+                behavior="padding"
+            >
+                <Text style={styles.text}>Have a family code?</Text>
+                <BasicInput
+                    value={familyCode}
+                    style={{ marginBottom: 20, marginTop: 5 }}
+                    changeTextHandler={handleFamilyCodeChange}
+                />
+            </KeyboardAvoidingView>
+            <View style={localStyles.inputContainer}>
+                <Text style={styles.text}>Don't Have One?</Text>
+                <TouchableOpacity
+                    style={localStyles.familyCodeButton}
+                    onPress={createFamily}
+                >
+                    <View style={localStyles.innerButtonContainer}>
+                        <Text style={[styles.text, { marginRight: 10 }]}>
+                            Create New Family
+                        </Text>
+                        <Icon name="send" size={20} color="#fff" />
+                    </View>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+};
 
-export default initialization1
+export default initialization1;
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#222",
     },
-    bigText: {
-        fontSize: 30,
-        color: "#fff",
-    },
     bigTextContainer: {
-      width: '65%'
+        width: "80%",
+        position: "absolute",
+        top: "40%",
+        left: "5%",
     },
-    input: {
-        width: '80%',
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        color: "#000",
-        backgroundColor: "#fff",
-        padding: 10,
-        borderRadius: 10,
+    emptySpacing: {
+        height: "55%",
     },
-    text: {
-        fontSize: 20,
-        color: "#fff",
+    inputContainer: {
+        width: "100%",
+    },
+    leftAlignedText: {
+        textAlign: "left",
     },
     familyCodeButton: {
         backgroundColor: Colors.blue,
-        padding: 10,
         borderRadius: 10,
-        width: '80%',
+        width: "100%",
         height: 40,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        marginTop: 5,
     },
     buttonText: {
         color: "#fff",
         fontSize: 16,
         marginRight: 10,
     },
-    innerButtonContainer:{
+    innerButtonContainer: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-    }
+    },
 });
-
