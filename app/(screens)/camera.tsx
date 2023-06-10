@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity,  Alert, StyleSheet, ImageBackground, Button } from "react-native";
+import { View, Text, TouchableOpacity,  Alert, ImageBackground, Button } from "react-native";
 import { Camera, requestCameraPermissionsAsync, CameraType, FlashMode, CameraCapturedPicture } from "expo-camera";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { storage } from "../firebase";

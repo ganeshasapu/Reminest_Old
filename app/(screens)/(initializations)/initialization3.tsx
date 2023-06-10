@@ -41,8 +41,6 @@ const initialization3 = () => {
     const [activityOptions, setActivityOptions] = useState(initialActivityOptions);
     const [milestoneOptions, setMilestoneOptions] = useState(initialMilestoneOptions);
 
-    const { name } = useLocalSearchParams();
-
     const toggleHistoryOption = (title: string) => {
         const newHistoryOptions = historyOptions.map((option) => {
             if (option.title === title) {

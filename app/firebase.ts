@@ -10,7 +10,7 @@ if (!Constants || !Constants.manifest || !Constants.manifest.extra) {
     throw new Error("Missing firebase config");
 }
 
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: Constants.manifest.extra.FIREBASE_API_KEY,
     authDomain: Constants.manifest.extra.FIREBASE_AUTH_DOMAIN,
     projectId: Constants.manifest.extra.FIREBASE_PROJECT_ID,
