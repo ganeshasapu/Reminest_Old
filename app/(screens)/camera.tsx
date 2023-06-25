@@ -1,14 +1,25 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity,  Alert, ImageBackground, Button } from "react-native";
-import { Camera, requestCameraPermissionsAsync, CameraType, FlashMode, CameraCapturedPicture } from "expo-camera";
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Alert,
+    ImageBackground,
+    Button,
+} from "react-native";
+import {
+    Camera,
+    requestCameraPermissionsAsync,
+    CameraType,
+    FlashMode,
+    CameraCapturedPicture,
+} from "expo-camera";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { storage } from "../firebase";
 import { ref, uploadBytes, uploadBytesResumable } from "firebase/storage";
 import { useRouter } from "expo-router";
 
 const CameraPreview = ({ photo, retakePicture, savePhoto }: any) => {
-
-    console.log("sdsfds", photo);
     return (
         <SafeAreaView
             style={{
@@ -53,16 +64,14 @@ const CameraScreen = () => {
         }
     };
 
-   const __takePicture = async () => {
-       if (!camera) return;
-       const photo = await camera.takePictureAsync();
-       console.log(photo);
-       setPreviewVisible(true);
-       setCapturedImage(photo);
-   };
+    const __takePicture = async () => {
+        if (!camera) return;
+        const photo = await camera.takePictureAsync();
+        setPreviewVisible(true);
+        setCapturedImage(photo);
+    };
 
     const __retakePicture = () => {
-        console.log("test")
         setCapturedImage(null);
         setPreviewVisible(false);
         __startCamera();
@@ -77,7 +86,6 @@ const CameraScreen = () => {
         const blob = await response.blob();
         const storageRef = ref(storage, fileName);
 
-
         if (!capturedImage) return;
 
         uploadBytesResumable(storageRef, blob)
@@ -89,7 +97,6 @@ const CameraScreen = () => {
             .catch((error) => {
                 console.log(error);
             });
-
     };
 
     const __switchCamera = () => {
@@ -110,13 +117,7 @@ const CameraScreen = () => {
         }
     };
 
-    console.log("startCamera", startCamera)
-    console.log("previewVisible", previewVisible)
-    console.log("capturedImage", capturedImage)
-    console.log("cameraType", cameraType)
-    console.log("flashMode", flashMode)
-
-    if (!startCamera){
+    if (!startCamera) {
         return (
             <View
                 style={{
@@ -162,7 +163,6 @@ const CameraScreen = () => {
         );
     }
 
-
     return (
         <Camera
             style={{ flex: 1, width: "100%" }}
@@ -190,7 +190,12 @@ const CameraScreen = () => {
                         alignItems: "center",
                     }}
                 >
-                    <Button title="Go back" onPress={() => {router.push("(screens)/home")}} />
+                    <Button
+                        title="Go back"
+                        onPress={() => {
+                            router.push("(screens)/home");
+                        }}
+                    />
                     <TouchableOpacity
                         onPress={__takePicture}
                         style={{
@@ -226,6 +231,5 @@ const CameraScreen = () => {
         </Camera>
     );
 };
-
 
 export default CameraScreen;

@@ -1,17 +1,15 @@
-import { Button, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { Camera, CameraType } from "expo-camera";
-import Colors from '../../constants/Colors';
-import { FirebaseContext } from '../auth';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext } from "react";
+import { useRouter } from "expo-router";
+import Colors from "../../constants/Colors";
+import { FirebaseContext } from "../auth";
 
 const home = () => {
-  const router = useRouter()
-  const { user, logoutUser } = useContext(FirebaseContext);
+    const router = useRouter();
+    const { user, logoutUser } = useContext(FirebaseContext);
 
-
-  return (
-      <View style={styles.outerContainer}>
+    return (
+        <View style={styles.outerContainer}>
             <View style={styles.innerContainer}>
                 <Text style={styles.text}>Welcome {user?.email}</Text>
                 <Button
@@ -36,12 +34,24 @@ const home = () => {
                         router.push("(screens)/camera");
                     }}
                 />
+                <Button
+                    title="Go to Video Page"
+                    onPress={() => {
+                        router.push("(screens)/video");
+                    }}
+                />
+                <Button
+                    title="Go to Feed Page"
+                    onPress={() => {
+                        router.push("(screens)/feed");
+                    }}
+                />
             </View>
-      </View>
-  );
-}
+        </View>
+    );
+};
 
-export default home
+export default home;
 
 const styles = StyleSheet.create({
     outerContainer: {
