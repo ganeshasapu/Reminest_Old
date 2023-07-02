@@ -1,12 +1,13 @@
-import { Text, View, StyleSheet, ImageBackground } from "react-native";
+import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
 import Colors from "../../../constants/Colors";
 import PreviewLoading2 from "../../../assets/vectors/PreviewLoading2";
+import PreviewPromptCard from "../../../components/PreviewPromptCard";
 
 const preview2 = () => {
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.mainContainer,
                 {
@@ -16,67 +17,54 @@ const preview2 = () => {
                 },
             ]}
         >
-            <View
-                style={[
-                    localStyles.textBubbleContainer,
-                    localStyles.shadow,
-                    localStyles.bubbleOne,
-                ]}
-            >
-                <Text style={[styles.text, localStyles.bubbleText]}>
-                    What is your favourite Chinese New Year Memory?
-                </Text>
-            </View>
+            <PreviewPromptCard
+                text="What is the story of the first time you met your partner?"
+                rotation="2deg"
+                cardWidth={210}
+                cardHeight={240}
+                cardLeft={25}
+                cardTop={140}
+                highlightLeft={13}
+                highlightTop={106}
+                highlightHeight={25}
+                highlightWidth={120}
+                color={Colors.orange}
+            />
+            <PreviewPromptCard
+                text="What was school like for you?"
+                rotation="5deg"
+                cardWidth={200}
+                cardHeight={180}
+                cardLeft={130}
+                cardTop={20}
+                highlightLeft={13}
+                highlightTop={68}
+                highlightHeight={25}
+                highlightWidth={86}
+                color={Colors.pink}
+            />
+            <PreviewPromptCard
+                text="What is your favourite holiday tradition?"
+                rotation="-1deg"
+                cardWidth={210}
+                cardHeight={240}
+                cardLeft={160}
+                cardTop={280}
+                highlightLeft={13}
+                highlightTop={105}
+                highlightHeight={52}
+                highlightWidth={130}
+                color={Colors.purple}
+            />
 
-            <View style={[localStyles.imageContainer]}>
-                <ImageBackground
-                    source={require("../../../assets/images/stock_image3.png")}
-                    style={[localStyles.image, localStyles.shadow]}
-                    imageStyle={{ borderRadius: 10 }}
-                />
-            </View>
-
-            <View
-                style={[
-                    localStyles.textBubbleContainer,
-                    localStyles.shadow,
-                    localStyles.bubbleTwo,
-                ]}
-            >
-                <Text style={[styles.text, localStyles.bubbleText]}>
-                    “Preparing the new year’s eve dinner! I remember....”
-                </Text>
-            </View>
-
-            <View
-                style={[
-                    localStyles.textBubbleContainer,
-                    localStyles.shadow,
-                    localStyles.bubbleThree,
-                ]}
-            >
-                <Text style={[styles.text, localStyles.bubbleText]}>
-                    What Christmas traditions were around when you were a kid?
-                </Text>
-            </View>
-
-            <View style={localStyles.emptySpacing} />
+            <View style={localStyles.emptySpacing}></View>
             <View style={localStyles.textContainer}>
                 <Text style={[styles.bigtext, localStyles.centerText]}>
                     Suggest prompts for future weeks
                 </Text>
-                <Text
-                    style={[
-                        styles.text,
-                        localStyles.centerText,
-                        { marginTop: 10 },
-                    ]}
-                >
-                    Learn more about your family's past and history
-                </Text>
             </View>
             <PreviewLoading2 width={30} height={20} />
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -104,49 +92,5 @@ const localStyles = StyleSheet.create({
     },
     emptySpacing: {
         height: "100%",
-    },
-    imageContainer: {
-        position: "absolute",
-        top: "20%",
-        right: "10%",
-        width: "90%",
-        height: "30%",
-    },
-    image:{
-        width: "100%",
-        height: "100%",
-    },
-    textBubbleContainer: {
-        position: "absolute",
-        backgroundColor: Colors.orange,
-        borderRadius: 10,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexWrap: "wrap",
-    },
-    bubbleOne: {
-        top: "5%",
-        left: "10%",
-        width: "70%",
-        height: "10%",
-        backgroundColor: Colors.orange,
-    },
-    bubbleTwo: {
-        top: "55%",
-        right: "10%",
-        width: "65%",
-        height: "10%",
-        backgroundColor: Colors.pink,
-    },
-    bubbleThree: {
-        top: "70%",
-        right: "10%",
-        width: "75%",
-        height: "10%",
-        backgroundColor: Colors.orange,
-    },
-    bubbleText: {
-        paddingHorizontal: 10,
     },
 });

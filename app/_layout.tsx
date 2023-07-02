@@ -36,7 +36,7 @@ function RootLayoutNav() {
     return (
         <>
             <FirebaseProvider>
-                <Navigator initialRouteName="(screens)/(previews)/preview1">
+                <Navigator>
                     <Slot />
                 </Navigator>
             </FirebaseProvider>

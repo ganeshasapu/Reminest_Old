@@ -56,7 +56,7 @@ const PreviewScreenNav = () => {
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity
-                        onPress={() => router.push("(screens)/(initializations)/initialization1")}
+                        onPress={() => router.push("(screens)/(initializations2)/initialization1")}
                         style={[
                             styles.navigationButton,
                             { backgroundColor: Colors.blue },

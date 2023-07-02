@@ -1,70 +1,49 @@
-import { Text, View, StyleSheet, ImageBackground, Image } from 'react-native'
-import React from 'react'
-import { styles } from '../../stylesheets/styles'
-import Colors from '../../../constants/Colors';
-import PreviewLoading1 from '../../../assets/vectors/PreviewLoading1';
+import { Text, View, StyleSheet, ImageBackground, Image, SafeAreaView } from "react-native";
+import React from "react";
+import { styles } from "../../stylesheets/styles";
+import Colors from "../../../constants/Colors";
+import PreviewLoading1 from "../../../assets/vectors/PreviewLoading1";
 
 const preview1 = () => {
-  return (
-      <View
-          style={[
-              styles.mainContainer,
-              {
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-              },
-          ]}
-      >
-          <View style={localStyles.imageOneContainer}>
-              <ImageBackground
-                  source={require("../../../assets/images/stock_image1.png")}
-                  style={[localStyles.imageOne, localStyles.shadow]}
-                  imageStyle={{ borderRadius: 10 }}
-              />
-          </View>
-          <View style={[localStyles.imageTwoContainer, localStyles.shadow, {borderTopRightRadius: 10, borderTopLeftRadius: 10}]}>
-              <ImageBackground
-                  source={require("../../../assets/images/stock_image2.png")}
-                  style={[
-                      localStyles.shadow,
-                      localStyles.imageTwo,
-                  ]}
-                    imageStyle={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-              />
-              <View style={[localStyles.imageTextContainer, localStyles.shadow]}>
-                  <Text
-                      style={[
-                          styles.text,
-                          localStyles.centerText,
-                          { padding: 5 },
-                      ]}
-                  >
-                      What did you talk about the first time you met?
-                  </Text>
-              </View>
-          </View>
-          <View style={localStyles.emptySpacing} />
-          <View style={localStyles.textContainer}>
-              <Text style={[styles.bigtext, localStyles.centerText]}>
-                  Respond to weekly prompts about your family
-              </Text>
-              <Text
-                  style={[
-                      styles.text,
-                      localStyles.centerText,
-                      { marginTop: 10 },
-                  ]}
-              >
-                  Stay connected with your family through stories and memories
-              </Text>
-          </View>
-          <PreviewLoading1 width={30} height={20} />
-      </View>
-  );
-}
+    return (
+        <SafeAreaView
+            style={[
+                styles.mainContainer,
+                {
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                },
+            ]}
+        >
+            <ImageBackground
+                source={require("../../../assets/images/stock_image7.png")}
+                style={[
+                    localStyles.image,
+                    localStyles.shadow,
+                    { top: "5%", left: "30%" },
+                ]}
+            />
+            <ImageBackground
+                source={require("../../../assets/images/stock_image8.png")}
+                style={[
+                    localStyles.image,
+                    localStyles.shadow,
+                    { top: "22%", left: "5%" },
+                ]}
+            />
+            <View style={localStyles.emptySpacing} />
+            <View style={localStyles.textContainer}>
+                <Text style={[styles.bigtext, localStyles.centerText]}>
+                    Respond to weekly prompts about your family
+                </Text>
+            </View>
+            <PreviewLoading1 width={30} height={20} />
+        </SafeAreaView>
+    );
+};
 
-export default preview1
+export default preview1;
 
 const localStyles = StyleSheet.create({
     centerText: {
@@ -76,8 +55,13 @@ const localStyles = StyleSheet.create({
             width: 0,
             height: 10,
         },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+    },
+    image: {
+        width: "80%",
+        height: "80%",
+        position: "absolute",
     },
     imageTwoContainer: {
         width: "60%",

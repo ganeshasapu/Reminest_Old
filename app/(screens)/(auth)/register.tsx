@@ -4,7 +4,6 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    Button,
 } from "react-native";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import {
@@ -14,14 +13,12 @@ import {
     useRef,
     useState,
 } from "react";
-import { PhoneAuthProvider, signInWithCredential } from "@firebase/auth";
-import { auth } from "../../firebase";
 import { firebaseConfig } from "../../firebase";
 import { useRouter } from "expo-router";
 import { Dropdown } from "react-native-element-dropdown";
-import { countries } from "../(auth)/countryvalues";
+import { countries } from "./countryvalues";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FormContext } from "./_layout";
+import { FormContext } from "../(initializations2)/_layout";
 
 import {
     CodeField,

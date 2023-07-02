@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useRouter } from "expo-router";
 import Colors from "../../constants/Colors";
 import { FirebaseContext } from "../auth";
@@ -7,6 +7,10 @@ import { FirebaseContext } from "../auth";
 const home = () => {
     const router = useRouter();
     const { user, logoutUser } = useContext(FirebaseContext);
+
+    useEffect(() => {
+        router.push("(screens)/(previews)/preview1");
+    }, []);
 
     return (
         <View style={styles.outerContainer}>

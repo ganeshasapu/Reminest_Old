@@ -1,15 +1,11 @@
-import { Text, View, StyleSheet, ImageBackground } from "react-native";
+import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
-import Colors from "../../../constants/Colors";
 import PreviewLoading3 from "../../../assets/vectors/PreviewLoading3";
 
 const preview3 = () => {
-
-
-
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.mainContainer,
                 {
@@ -22,50 +18,50 @@ const preview3 = () => {
             <View style={[localStyles.imageContainer, localStyles.imageOne]}>
                 <ImageBackground
                     source={require("../../../assets/images/stock_image4.png")}
-                    style={[localStyles.image, localStyles.shadow]}
+                    style={[
+                        localStyles.image,
+                        localStyles.shadow,
+                        { transform: [{ rotate: "-4deg" }] },
+                    ]}
                 />
             </View>
 
             <View style={[localStyles.imageContainer, localStyles.imageTwo]}>
                 <ImageBackground
                     source={require("../../../assets/images/stock_image5.png")}
-                    style={[localStyles.image, localStyles.shadow]}
+                    style={[
+                        localStyles.image,
+                        localStyles.shadow,
+                        { transform: [{ rotate: "4deg" }] },
+                    ]}
                 />
             </View>
 
             <View style={[localStyles.imageContainer, localStyles.imageThree]}>
                 <ImageBackground
                     source={require("../../../assets/images/stock_image6.png")}
-                    style={[localStyles.image, localStyles.shadow]}
+                    style={[
+                        localStyles.image,
+                        localStyles.shadow,
+                        { transform: [{ rotate: "-6deg" }] },
+                    ]}
                 />
             </View>
 
             <View style={localStyles.emptySpacing} />
             <View style={localStyles.textContainer}>
-                <Text style={[styles.bigtext, localStyles.centerText]}>
+                <Text style={[styles.bigtext, {textAlign: "center"}]}>
                     Capture your family’s unique story
-                </Text>
-                <Text
-                    style={[
-                        styles.text,
-                        localStyles.centerText,
-                        { marginTop: 10 },
-                    ]}
-                >
-                    Start building your digital archive for future generations
                 </Text>
             </View>
             <PreviewLoading3 width={30} height={20} />
-        </View>
+        </SafeAreaView>
     );
 };
 
 export default preview3;
 
 const localStyles = StyleSheet.create({
-    centerText: {
-        textAlign: "center",
-    },
     shadow: {
         shadowColor: "#000",
         shadowOffset: {

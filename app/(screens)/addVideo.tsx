@@ -9,7 +9,6 @@ import { ResizeMode, Video } from "expo-av";
 import {
     ref,
     getDownloadURL,
-    StorageReference,
     uploadBytes,
 } from "firebase/storage";
 import { db, storage } from "../firebase";

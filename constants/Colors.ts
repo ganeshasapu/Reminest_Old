@@ -1,6 +1,6 @@
 
 export default {
-    background: "#302929",
+    background: "#FBF5EE",
     blue: "#508BFF",
     purple: "#A4A7F3",
     orange: "#FFAB5B",

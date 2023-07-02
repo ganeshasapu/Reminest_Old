@@ -3,17 +3,17 @@ import Colors from "../../constants/Colors";
 
 export const styles = StyleSheet.create({
     text: {
-        color: "#fff",
+        color: "#000",
         fontSize: 16,
         fontFamily: "open-sans",
     },
     bigtext: {
-        color: "#fff",
+        color: "#000",
         fontSize: 24,
         fontFamily: "gabriel-sans",
     },
     titletext: {
-        color: "#fff",
+        color: "#000",
         fontSize: 34,
         fontFamily: "gabriel-sans",
     },
