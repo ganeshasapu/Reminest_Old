@@ -9,6 +9,7 @@ const home = () => {
     const { user, logoutUser } = useContext(FirebaseContext);
 
     useEffect(() => {
+        // router.push("(screens)/(initializations3)/userInitialization");
         router.push("(screens)/(previews)/preview1");
     }, []);
 

@@ -6,10 +6,10 @@ import { hexToRGBA } from "../utility/hexToRGBA";
 import { useState, useEffect } from "react";
 import LogoBackgroundFaded from "../assets/vectors/LogoBackgroundFaded";
 
-const baseRoute = "(screens)/(initializations)/";
+const baseRoute = "(screens)/(initializations3)/";
 const routes = [
-    "initialization1",
-    "initialization2",
+    "signUpSignIn",
+    "userInitialization",
     "initialization3",
     "initialization4",
     "initialization5",

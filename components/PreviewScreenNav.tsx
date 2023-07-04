@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Colors from "../constants/Colors";
 import { useRouter } from "expo-router";
 import ADIcon from "@expo/vector-icons/AntDesign";
@@ -56,7 +56,11 @@ const PreviewScreenNav = () => {
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity
-                        onPress={() => router.push("(screens)/(initializations2)/initialization1")}
+                        onPress={() =>
+                            router.push(
+                                "(screens)/(initializations3)/signUpSignIn"
+                            )
+                        }
                         style={[
                             styles.navigationButton,
                             { backgroundColor: Colors.blue },

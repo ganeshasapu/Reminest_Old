@@ -5,6 +5,11 @@ export const styles = StyleSheet.create({
     text: {
         color: "#000",
         fontSize: 16,
+        fontFamily: "archivo",
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
         fontFamily: "open-sans",
     },
     bigtext: {
@@ -21,5 +26,14 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.background,
         padding: 20,
+    },
+    button: {
+        backgroundColor: Colors.blue,
+        borderRadius: 10,
+        width: "100%",
+        height: 45,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
     },
 });

@@ -15,6 +15,7 @@ export default function RootLayout() {
         "open-sans": require("../assets/fonts/OpenSans-Regular.ttf"),
         "open-sans-semibold": require("../assets/fonts/OpenSans-SemiBold.ttf"),
         "open-sans-light": require("../assets/fonts/OpenSans-Light.ttf"),
+        "archivo": require("../assets/fonts/Archivo-Regular.ttf"),
         ...FontAwesome.font,
     });
 

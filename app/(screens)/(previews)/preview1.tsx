@@ -1,7 +1,6 @@
-import { Text, View, StyleSheet, ImageBackground, Image, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
-import Colors from "../../../constants/Colors";
 import PreviewLoading1 from "../../../assets/vectors/PreviewLoading1";
 
 const preview1 = () => {
@@ -63,32 +62,6 @@ const localStyles = StyleSheet.create({
         height: "80%",
         position: "absolute",
     },
-    imageTwoContainer: {
-        width: "60%",
-        height: "20%",
-        position: "absolute",
-        top: "50%",
-        left: "10%",
-        backgroundColor: Colors.background,
-    },
-    imageTextContainer: {
-        backgroundColor: Colors.purple,
-        width: "100%",
-        height: "50%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-    },
-    imageTwo: {
-        width: "100%",
-        height: "100%",
-    },
-    imageOne: {
-        width: "100%",
-        height: "100%",
-    },
     textContainer: {
         display: "flex",
         justifyContent: "center",
@@ -98,13 +71,5 @@ const localStyles = StyleSheet.create({
     },
     emptySpacing: {
         height: "100%",
-    },
-    imageOneContainer: {
-        position: "absolute",
-        top: "0%",
-        right: "10%",
-        width: "70%",
-        height: "60%",
-        backgroundColor: Colors.background,
-    },
+    }
 });

@@ -12,6 +12,7 @@ const BasicInput: React.FC<BasicInputProps> = ({
     value,
     changeTextHandler,
     style,
+    placeholder="Start Typing...",
     ...rest
 }) => {
 
@@ -23,7 +24,7 @@ const BasicInput: React.FC<BasicInputProps> = ({
             onChangeText={changeTextHandler}
             value={value}
             autoCapitalize="none"
-            placeholder="Start Typing..."
+            placeholder={placeholder}
             placeholderTextColor={"#777"}
             {...rest}
         ></TextInput>
