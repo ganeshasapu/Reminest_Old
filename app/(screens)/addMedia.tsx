@@ -47,7 +47,6 @@ const ImageUpload = () => {
     };
 
     const uploadImage = async () => {
-        console.log(selectedImage);
         if (!selectedImage) {
             console.log("No image selected!");
             return;
@@ -103,7 +102,6 @@ const ImageUpload = () => {
         router.push("(screens)/feed");
     };
 
-    console.log("selectedImage:", selectedImage);
 
     return (
         <SafeAreaView>

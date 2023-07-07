@@ -60,6 +60,7 @@ const FirebaseProvider = ({ children }: any) => {
                 if (result.user === null) return;
                 setUser(result.user);
                 AsyncStorage.setItem("user", JSON.stringify(result.user));
+                router.push("(screens)/home");
             })
             .catch((error) => {
                 console.log(error);

@@ -28,7 +28,9 @@ export interface FamilyType {
 export interface WeeklyPostsCollectionsType {
     prompt: string;
     posts: DocumentReference[];
+    usersResponded: string[];
     comments: string[];
+    highlightedWord: string;
 }
 
 export interface mediaType {

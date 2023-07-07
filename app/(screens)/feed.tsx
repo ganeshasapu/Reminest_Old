@@ -14,6 +14,12 @@ import { db } from "../firebase";
 import { UserType, FamilyType, WeeklyPostsCollectionsType } from "../schema";
 import { collections } from "../schema";
 import { useRouter } from "expo-router";
+import LogoName from "../../assets/vectors/LogoName";
+import { styles } from "../stylesheets/styles";
+import Colors from "../../constants/Colors";
+import PostCardCover from "../../components/PostCardCover";
+import FamilyCode from "../../components/FamilyCode";
+import PostCard from "../../components/PostCard";
 
 const feed = () => {
     const [userData, setUserData] = useState<UserType | null>(null);
@@ -24,8 +30,6 @@ const feed = () => {
     const [isLoading, setLoading] = useState(true);
 
     const { user } = useContext(FirebaseContext);
-
-    const router = useRouter();
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -85,13 +89,11 @@ const feed = () => {
         userPosts: string[],
         weeklyCollectionposts: string[]
     ): boolean {
-        console.log(userPosts, weeklyCollectionposts);
         return userPosts.some((item) => weeklyCollectionposts.includes(item));
     }
 
     if (user === null) return;
 
-    console.log(isLoading, userData, familyData, weeklyPostsCollections)
     if (
         isLoading ||
         !userData ||
@@ -101,69 +103,28 @@ const feed = () => {
         return <Text>Loading...</Text>;
     else {
         return (
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.welcome}>
-                    {"Welcome " + userData.firstName + ", " + userData.lastName}
-                </Text>
-                <ScrollView contentContainerStyle={styles.scrollView}>
-                    {weeklyPostsCollections.map((post, index) =>
-                        userSubmittedPost(
-                            userData.posts.map((postRef) => postRef.path),
-                            post.posts.map((postRef) => postRef.path)
-                        ) ? (
-                            <TouchableOpacity
+            <SafeAreaView
+                style={{ flex: 1, backgroundColor: Colors.background }}
+            >
+                <View style={styles.mainContainer}>
+                    <LogoName width={150} height={50} />
+                    <ScrollView contentContainerStyle={localStyles.scrollView}>
+                        {/* <PostCard /> */}
+                        {weeklyPostsCollections.map((post, index) => (
+                            <PostCard
+                                userHasSubmitted={post.usersResponded.includes(user.uid)}
+                                post={post}
+                                index={index}
+                                familyData={familyData}
                                 key={index}
-                                style={styles.postContainer}
-                                onPress={() =>
-                                    router.push({
-                                        pathname:
-                                            "(screens)/postCollectionScreen",
-                                        params: {
-                                            collectionId:
-                                                familyData
-                                                    .weekly_posts_collections[
-                                                    index
-                                                ],
-                                        },
-                                    })
-                                }
-                            >
-                                <Text style={styles.postPrompt}>
-                                    {post.prompt}
-                                </Text>
-                                <Text>View Posts</Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.postContainer}
-                                onPress={() =>
-                                    router.push({
-                                        pathname:
-                                            "(screens)/postCollectionScreen",
-                                        params: {
-                                            collectionId:
-                                                familyData
-                                                    .weekly_posts_collections[
-                                                    index
-                                                ],
-                                        },
-                                    })
-                                }
-                            >
-                                <Text style={styles.postPrompt}>
-                                    {post.prompt}
-                                </Text>
-                                <Text>Not Submitted Yet, click to submit</Text>
-                            </TouchableOpacity>
-                        )
-                    )}
-                    <Text>
-                        {user.uid === familyData.creator
-                            ? userData.families[0]
-                            : ""}
-                    </Text>
-                </ScrollView>
+                            />
+                        ))}
+                        {/* <PostSlide /> */}
+                        <FamilyCode code={userData.families[0]} />
+                        <Text>You've reached the end!</Text>
+                        <Text style={{textAlign: "center"}}>Keep building your Reminest to collect more memories!</Text>
+                    </ScrollView>
+                </View>
             </SafeAreaView>
         );
     }
@@ -171,7 +132,7 @@ const feed = () => {
 
 export default feed;
 
-const styles = StyleSheet.create({
+const localStyles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
@@ -195,15 +156,8 @@ const styles = StyleSheet.create({
         width: 300,
         alignItems: "center",
         justifyContent: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
+
     postPrompt: {
         fontSize: 16,
     },

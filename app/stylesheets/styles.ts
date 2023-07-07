@@ -3,7 +3,7 @@ import Colors from "../../constants/Colors";
 
 export const styles = StyleSheet.create({
     text: {
-        color: "#000",
+        color: "#fff",
         fontSize: 16,
         fontFamily: "archivo",
     },
@@ -13,19 +13,20 @@ export const styles = StyleSheet.create({
         fontFamily: "open-sans",
     },
     bigtext: {
-        color: "#000",
+        color: "#fff",
         fontSize: 24,
         fontFamily: "gabriel-sans",
     },
     titletext: {
-        color: "#000",
+        color: "#fff",
         fontSize: 34,
         fontFamily: "gabriel-sans",
+        lineHeight: 40,
     },
     mainContainer: {
         flex: 1,
         backgroundColor: Colors.background,
-        padding: 20,
+        paddingHorizontal: 20,
     },
     button: {
         backgroundColor: Colors.blue,

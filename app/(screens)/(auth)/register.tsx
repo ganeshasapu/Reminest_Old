@@ -77,6 +77,7 @@ const register = () => {
 
     const { sendVerification, registerUser } = useContext(FirebaseContext);
 
+
     const register = () => {
         registerUser(value)
             .then((result: any) => {
@@ -157,7 +158,7 @@ const register = () => {
             </View>
             <DateTimePicker
                 testID="dateTimePicker"
-                value={birthday}
+                value={birthday ? birthday : new Date()}
                 mode={"date"}
                 is24Hour={true}
                 onChange={onChange}
