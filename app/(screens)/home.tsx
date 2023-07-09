@@ -12,6 +12,7 @@ const home = () => {
         // router.push("(screens)/(initializations3)/userInitialization");
         // router.push("(screens)/(previews)/preview1");
         router.push("(screens)/feed")
+        // router.push("(screens)/(posting)/confirmPost")
         // router.push("(screens)/camera")
         // router.push("(screens)/(auth)/register")
         // router.push("(screens)/(initializations2)/initialization1")

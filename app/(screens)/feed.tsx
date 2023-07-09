@@ -9,7 +9,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { FirebaseContext } from "../auth";
 import { doc } from "firebase/firestore";
-import { getDoc } from "firebase/firestore";
+import { getDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { UserType, FamilyType, WeeklyPostsCollectionsType } from "../schema";
 import { collections } from "../schema";
@@ -63,34 +63,29 @@ const feed = () => {
     useEffect(() => {
         const fetchWeeklyPostsCollections = async () => {
             if (familyData && familyData.weekly_posts_collections) {
-                familyData.weekly_posts_collections.forEach(
-                    async (weeklyPostCollection) => {
-                        const weeklyPostCollectionRef = await getDoc(
-                            doc(
-                                db,
-                                collections.weekly_post_collections,
-                                weeklyPostCollection
-                            )
+                const weeklyPostsCollectionsData = await Promise.all(
+                    familyData.weekly_posts_collections.map(async (id) => {
+                        const docSnap = await getDoc(
+                            doc(db, collections.weekly_post_collections, id)
                         );
-                        if (weeklyPostCollectionRef.exists()) {
-                            setWeeklyPostsCollections([
-                                ...weeklyPostsCollections,
-                                weeklyPostCollectionRef.data() as WeeklyPostsCollectionsType,
-                            ]);
+
+                        if (docSnap.exists()) {
+                            return docSnap.data();
+                        } else {
+                            console.log(`No such document with id ${id}`);
+                            return null;
                         }
-                    }
+                    })
+                );
+
+                setWeeklyPostsCollections(
+                    weeklyPostsCollectionsData as WeeklyPostsCollectionsType[]
                 );
             }
         };
         fetchWeeklyPostsCollections();
     }, [familyData]); // familyData is the dependency
 
-    function userSubmittedPost(
-        userPosts: string[],
-        weeklyCollectionposts: string[]
-    ): boolean {
-        return userPosts.some((item) => weeklyCollectionposts.includes(item));
-    }
 
     if (user === null) return;
 
@@ -108,18 +103,16 @@ const feed = () => {
             >
                 <View style={styles.mainContainer}>
                     <LogoName width={150} height={50} />
-                    <ScrollView contentContainerStyle={localStyles.scrollView}>
-                        {/* <PostCard /> */}
-                        {weeklyPostsCollections.map((post, index) => (
+                    <ScrollView contentContainerStyle={localStyles.scrollView} showsVerticalScrollIndicator={false} >
+                        {weeklyPostsCollections.reverse().map((post, index) => (
                             <PostCard
                                 userHasSubmitted={post.usersResponded.includes(user.uid)}
                                 post={post}
-                                index={index}
+                                weeklyPostIndex={weeklyPostsCollections.length - index - 1}
                                 familyData={familyData}
                                 key={index}
                             />
                         ))}
-                        {/* <PostSlide /> */}
                         <FamilyCode code={userData.families[0]} />
                         <Text>You've reached the end!</Text>
                         <Text style={{textAlign: "center"}}>Keep building your Reminest to collect more memories!</Text>
@@ -133,32 +126,8 @@ const feed = () => {
 export default feed;
 
 const localStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-    },
-    welcome: {
-        fontSize: 20,
-        fontWeight: "bold",
-        padding: 10,
-    },
     scrollView: {
         alignItems: "center",
         justifyContent: "center",
-    },
-    postContainer: {
-        backgroundColor: "#F5F5F5",
-        marginBottom: 10,
-        marginHorizontal: 10,
-        padding: 10,
-        borderRadius: 5,
-        height: 300,
-        width: 300,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-    postPrompt: {
-        fontSize: 16,
     },
 });

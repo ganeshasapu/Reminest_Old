@@ -15,7 +15,7 @@ import { db } from "../app/firebase";
 export interface PostCardCoverProps {
     userHasSubmitted: boolean;
     post: WeeklyPostsCollectionsType;
-    index: number;
+    weeklyPostIndex: number;
     familyData: FamilyType;
 }
 
@@ -25,7 +25,7 @@ const h = Dimensions.get("window").height;
 const PostCardCover = ({
     userHasSubmitted,
     post,
-    index,
+    weeklyPostIndex,
     familyData,
 }: PostCardCoverProps) => {
     const router = useRouter();
@@ -84,23 +84,14 @@ const PostCardCover = ({
             highlightIndex + post.highlightedWord.length,
             prompt.length
         );
+        return [beforeHighlight, highlight, afterHighlight];
     };
     splitPrompt(post.prompt);
 
     return userHasSubmitted ? (
-        <TouchableOpacity
-            key={index}
+        <View
+            key={weeklyPostIndex}
             style={[localStyles.postContainer, localStyles.submittedPost]}
-            activeOpacity={0.8}
-            onPress={() =>
-                router.push({
-                    pathname: "(screens)/postCollectionScreen",
-                    params: {
-                        collectionId:
-                            familyData.weekly_posts_collections[index],
-                    },
-                })
-            }
         >
             <View style={localStyles.emptySpacing2} />
             <Text style={localStyles.submittedPromptText}>
@@ -119,10 +110,10 @@ const PostCardCover = ({
             <Text style={localStyles.submittedNameText}>
                 {namesToString(respondedNames)}
             </Text>
-        </TouchableOpacity>
+        </View>
     ) : (
         <View
-            key={index}
+            key={weeklyPostIndex}
             style={[localStyles.postContainer, localStyles.unsubmittedPost]}
         >
             <View style={localStyles.emptySpacing} />
@@ -157,10 +148,12 @@ const PostCardCover = ({
                 <TouchableOpacity
                     onPress={() =>
                         router.push({
-                            pathname: "(screens)/postCollectionScreen",
+                            pathname: "(screens)/(posting)/recordVideo",
                             params: {
                                 collectionId:
-                                    familyData.weekly_posts_collections[index],
+                                    familyData.weekly_posts_collections[
+                                        weeklyPostIndex
+                                    ],
                             },
                         })
                     }
@@ -179,8 +172,8 @@ const localStyles = StyleSheet.create({
     postContainer: {
         padding: 20,
         borderRadius: 20,
-        height: h * 0.7,
-        width: w * 0.8,
+        height: h * 0.8,
+        width: w * 0.9,
         display: "flex",
     },
     emptySpacing: {

@@ -1,27 +1,44 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { Image } from "expo-image";
 import PostCardSlide from "./PostCardSlide";
 import PostCardCover from "./PostCardCover";
 import { PostCardCoverProps } from "./PostCardCover";
-import { DocumentReference, doc, getDoc } from "firebase/firestore";
-import { PostType, collections } from "../app/schema";
-import { db } from "../app/firebase";
+import { DocumentReference, getDoc } from "firebase/firestore";
+import { PostType, UserType, mediaType } from "../app/schema";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
-
-interface PostCardProps extends PostCardCoverProps {
-
-}
+interface PostCardProps extends PostCardCoverProps {}
 
 const PostCard = ({
     userHasSubmitted,
     post,
-    index,
+    weeklyPostIndex,
     familyData,
 }: PostCardProps) => {
+    const [postsData, setPostsData] = useState<PostType[] | null>(null);
+
+    useEffect(() => {
+        if (!post) {
+            return;
+        }
+        const fetchPostsData = async () => {
+            const postsData = await Promise.all(
+                post.posts.map((postId) => getDoc(postId))
+            );
+            setPostsData(postsData.map((doc) => doc.data() as PostType));
+        };
+        fetchPostsData();
+    }, [post]);
+
+    // console.log("post", post)
+    // console.log("postsData", postsData)
+    // console.log(postsData)
+
+    if (!post || !postsData) {
+        return null;
+    }
 
     return (
         <View style={localStyles.postContainer}>
@@ -35,17 +52,20 @@ const PostCard = ({
                 <PostCardCover
                     userHasSubmitted={userHasSubmitted}
                     post={post}
-                    index={index}
+                    weeklyPostIndex={weeklyPostIndex}
                     familyData={familyData}
                 />
                 {userHasSubmitted
-                    ? post.posts.map((postId, index) => (
-                          <PostCardSlide
-                              key={index}
-                              imageIndex={index}
-                              postId={postId as DocumentReference<PostType>}
-                          />
-                      ))
+                    ? postsData.map((post, index) =>
+                          post.media.map((media, index) => (
+                              <PostCardSlide
+                                  post={post}
+                                  media={media}
+                                  key={index}
+                                  imageIndex={index}
+                              />
+                          ))
+                      )
                     : null}
             </ScrollView>
         </View>
@@ -63,15 +83,10 @@ const localStyles = StyleSheet.create({
     },
     postContainer: {
         borderRadius: 20,
-        height: h * 0.7,
-        width: w * 0.8,
+        height: h * 0.8,
+        width: w * 0.9,
         display: "flex",
-    },
-    container: {
-        width: w * 0.8,
-        height: h * 0.7,
-        borderRadius: 20,
-        padding: 10,
+        marginVertical: 20,
     },
     image: {
         width: "100%",

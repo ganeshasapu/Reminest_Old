@@ -99,7 +99,6 @@ const AddImage = () => {
         const fileName = `photo_${Date.now()}.jpg`;
 
         if (!capturedImage) return;
-        console.log(capturedImage?.uri);
 
         const compressedImage = await manipulateAsync(capturedImage?.uri, [], {
             compress: 0.5,

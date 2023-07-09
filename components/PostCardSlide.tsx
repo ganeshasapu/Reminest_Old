@@ -1,48 +1,34 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import Colors from "../constants/Colors";
 import { Image } from "expo-image";
-import { DocumentReference, getDoc } from "firebase/firestore";
-import { PostType, UserType } from "../app/schema";
+import {  PostType, UserType, mediaType } from "../app/schema";
+import { ResizeMode, Video } from "expo-av";
+import { getDoc } from "firebase/firestore";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 interface PostCardSlideProps {
     imageIndex: number;
-    postId: DocumentReference<PostType>;
+    post: PostType;
+    media: mediaType;
 }
 
 const PostCardSlide = ({
     imageIndex,
-    postId,
+    post,
+    media,
 }: PostCardSlideProps) => {
-
-    const [postData, setPostData] = useState<PostType | null>(null);
     const [author, setAuthor] = useState<UserType | null>(null);
 
     useEffect(() => {
-        getDoc(postId).then((doc) => {
-            console.log("Doc: ", doc.data());
-            setPostData(doc.data() as PostType);
-        }
-        );
-    }, []);
+        const fetchAuthors = async () => {
+            const author = await getDoc(post.author);
+            setAuthor(author.data() as UserType);
+        };
 
-    useEffect(() => {
-        if (!postData) {
-            return;
-        }
-        getDoc(postData.author).then((doc) => {
-            console.log("Author: ", doc.data());
-            setAuthor(doc.data() as UserType);
-        })
-
-    }, [postData]);
-
-    if (!postData || !author) {
-        return null;
-    }
+        fetchAuthors();
+    }, [post]);
 
     const monthNames = [
         "January",
@@ -66,16 +52,33 @@ const PostCardSlide = ({
          return formattedDate;
     }
 
+    if (!post || !media || !author) {
+        return null;
+    }
+
+
     return (
         <View style={localStyles.container}>
-            <Image
-                key={imageIndex}
-                style={localStyles.image}
-                source={postData.media[0].url}
-            />
+            {media.type == "IMAGE" ? (
+                <Image
+                    key={imageIndex}
+                    style={localStyles.image}
+                    source={media.url}
+                />
+            ) : (
+                <Video
+                    style={localStyles.image}
+                    source={{ uri: media.url }}
+                    useNativeControls
+                    resizeMode={ResizeMode.CONTAIN}
+                    shouldPlay={true}
+                />
+            )}
             <View style={localStyles.captionContainer}>
                 <Text style={localStyles.nameText}>{author.firstName}</Text>
-                <Text style={localStyles.dateText}>{getFormattedDate(new Date(postData.timestamp))}</Text>
+                <Text style={localStyles.dateText}>
+                    {getFormattedDate(new Date(post.timestamp))}
+                </Text>
             </View>
         </View>
     );
@@ -84,23 +87,9 @@ const PostCardSlide = ({
 export default PostCardSlide;
 
 const localStyles = StyleSheet.create({
-    scrollView: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: "#fff",
-        borderRadius: 20,
-    },
-    postContainer: {
-        marginBottom: 10,
-        marginHorizontal: 10,
-        borderRadius: 20,
-        height: h * 0.7,
-        width: w * 0.8,
-        display: "flex",
-    },
     container: {
-        width: w * 0.8,
-        height: h * 0.7,
+        width: w * 0.9,
+        height: h * 0.8,
         borderRadius: 20,
         padding: 10,
     },
