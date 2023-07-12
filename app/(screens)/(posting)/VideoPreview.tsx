@@ -1,22 +1,25 @@
 import { Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { Video, ResizeMode } from 'expo-av';
 import { styles } from '../../stylesheets/styles';
 import Colors from '../../../constants/Colors';
-import { PostContext } from './_layout';
+import { PostContext, RouteContext } from './_layout';
 import * as VideoThumbnails from "expo-video-thumbnails";
+import { useRouter } from 'expo-router';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 const VideoPreview = () => {
 
+    const videoRef = useRef<Video>(null);
+
     const {videoUri, setThumbnailUri} = useContext(PostContext)
 
     useEffect(() => {
        const generateThumbnail = async () => {
            try {
-               const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri);
+               const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, {time: 1000});
                setThumbnailUri(uri);
            } catch (e) {
                console.warn(e);
@@ -31,9 +34,10 @@ const VideoPreview = () => {
               <View style={localStyles.previewTextBox}>
                   <Text style={localStyles.previewText}>Preview Video</Text>
               </View>
-              <View style={[{ flex: 1, marginVertical: 10 }, styles.shadow]}>
+              <View style={[{ flex: 1, marginTop: 10 }]}>
                   <View style={localStyles.videoPreviewBox}>
                       <Video
+                            ref={videoRef}
                           style={localStyles.videoPreview}
                           source={{ uri: videoUri }}
                           useNativeControls

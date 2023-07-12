@@ -1,10 +1,10 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Alert} from "react-native";
 import Colors from "../../../constants/Colors";
 import { usePathname, useRouter } from "expo-router";
 import ADIcon from "@expo/vector-icons/AntDesign";
 import { hexToRGBA } from "../../../utility/hexToRGBA";
 import { useContext, useEffect, useState } from "react";
-import { RouteContext } from "./_layout";
+import { PostContext, RouteContext } from "./_layout";
 
 const baseRoute = "(screens)/(posting)/";
 const routes = ["recordVideo", "previewVideo", "addMedia", "confirmPost"];
@@ -14,6 +14,7 @@ const PostingFlowNav = () => {
     const pathName = usePathname();
 
     const { currentRouteIndex, setCurrentRouteIndex } = useContext(RouteContext)
+    const { setVideoUri, imageUri } = useContext(PostContext);
 
     useEffect(() => {
         if (pathName === "/previewVideo") {
@@ -23,13 +24,31 @@ const PostingFlowNav = () => {
 
     const previous = () => {
         if (currentRouteIndex == 1) {
-            alert("If you go back ");
+            Alert.alert("Attention!", "If you go back you will lose the current recording", [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+                { text: "OK", onPress: () => {
+                    router.push(baseRoute + routes[currentRouteIndex - 1])
+                    setCurrentRouteIndex(currentRouteIndex - 1);
+                    setVideoUri("")
+                }},
+            ]);
         }
-        if (currentRouteIndex > 0) {
+        else if (currentRouteIndex == 2) {
+            router.push(baseRoute + "recordVideo");
             setCurrentRouteIndex(currentRouteIndex - 1);
-            router.back();
+        }
+        else if (currentRouteIndex > 0) {
+            setCurrentRouteIndex(currentRouteIndex - 1);
+            router.push(baseRoute + routes[currentRouteIndex - 1]);
         }
     };
+
+    console.log(currentRouteIndex);
+
 
     const next = () => {
         if (currentRouteIndex < routes.length - 1) {
@@ -41,6 +60,7 @@ const PostingFlowNav = () => {
     if (currentRouteIndex == 0) {
         return <View />;
     }
+
 
     return (
         <View style={styles.buttonGroupContainer}>
@@ -58,23 +78,9 @@ const PostingFlowNav = () => {
                 ) : (
                     <View />
                 )}
-                {currentRouteIndex != routes.length - 1 ? (
+                {currentRouteIndex == routes.length - 1 || (currentRouteIndex == 2 && imageUri == "") ? null : (
                     <TouchableOpacity
                         onPress={next}
-                        style={[
-                            styles.navigationButton,
-                            { backgroundColor: Colors.blue },
-                        ]}
-                    >
-                        <ADIcon name="arrowright" size={30} color="#fff" />
-                    </TouchableOpacity>
-                ) : (
-                    <TouchableOpacity
-                        onPress={() =>
-                            router.push(
-                                "(screens)/(initializations3)/signUpSignIn"
-                            )
-                        }
                         style={[
                             styles.navigationButton,
                             { backgroundColor: Colors.blue },
@@ -107,13 +113,6 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowRadius: 12,
-        shadowOpacity: 0.5,
     },
     buttonGroupContainer: {
         display: "flex",

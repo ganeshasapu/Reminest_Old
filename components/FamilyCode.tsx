@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, Text, View, Dimensions, Alert } from "react-native";
 import React from "react";
 import Colors from "../constants/Colors";
 import * as Clipboard from "expo-clipboard";
@@ -19,12 +19,11 @@ const FamilyCode = ({ code }: FamilyCodeProps) => {
                 <Text
                     onPress={() => {
                         Clipboard.setStringAsync(code).then(() => {
-                            alert("Code copied to clipboard!");
+                            Alert.alert("Copied!", "Send this code to your family");
                         }
                         );
                     }}
                     style={[styles.text, { textAlign: "center", color: Colors.blue, marginBottom: 10}]}
-
                 >
                     Click to copy code
                 </Text>

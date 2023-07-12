@@ -10,7 +10,6 @@ import {
 import React, { useContext } from "react";
 import Colors from "../../../constants/Colors";
 import { styles } from "../../stylesheets/styles";
-import { PostContext } from "./_layout";
 import { useRouter } from "expo-router";
 import {
     doc,
@@ -18,20 +17,19 @@ import {
     addDoc,
     updateDoc,
     arrayUnion,
-    setDoc,
-    DocumentReference,
 } from "firebase/firestore";
 import {
     ref,
     uploadBytes,
     getDownloadURL,
     uploadBytesResumable,
-    UploadTask,
 } from "firebase/storage";
 import { storage, db } from "../../firebase";
-import { mediaType, collections, WeeklyPostsCollectionsType } from "../../schema";
+import { mediaType, collections, } from "../../schema";
 import { FirebaseContext } from "../../auth";
 import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
+import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
+import { PostContext } from "./_layout";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -42,15 +40,15 @@ const confirmPost = () => {
 
     if (!user) return <Text>No User Found</Text>;
 
-    const { thumbnailUri, imageUri, prompt, videoUri, collectionId } = useContext(PostContext);
+    const { thumbnailUri, imageUri, prompt, videoUri, collectionID } = useContext(PostContext);
 
     // const videoUri = "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4";
     // const thumbnailUri = "https://picsum.photos/seed/696/3000/2000";
     // const imageUri = "https://picsum.photos/seed/696/3000/2000";
     // const prompt = "What is your favorite color?";
-    // const collectionId = 1;
+    // const collectionID = 1;
 
-    if (!thumbnailUri || !imageUri || !prompt || !collectionId || !videoUri) {
+    if (!thumbnailUri || !imageUri || !prompt || !collectionID || !videoUri) {
         <SafeAreaView>
             <Text>Loading...</Text>
         </SafeAreaView>;
@@ -108,7 +106,7 @@ const confirmPost = () => {
         const collectionRef = doc(
             db,
             collections.weekly_post_collections,
-            collectionId.toString()
+            collectionID.toString()
         );
 
         await updateDoc(collectionRef, {
@@ -128,15 +126,26 @@ const confirmPost = () => {
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
             <View style={styles.mainContainer}>
                 <View style={{ height: h * 0.1 }} />
-                <View style={localStyles.imageContainer}>
-                    <Image
-                        source={{ uri: imageUri }}
-                        style={[localStyles.image, styles.shadow]}
-                    />
-                    <Image
-                        source={{ uri: thumbnailUri }}
-                        style={[localStyles.videoThumbnail, styles.shadow]}
-                    />
+                <View style={localStyles.mediaContainer}>
+                    <View
+                        style={[localStyles.thumbnailContainer, styles.shadow]}
+                    >
+                        <Image
+                            source={{ uri: thumbnailUri }}
+                            style={[localStyles.videoThumbnail]}
+                        />
+                        <PlayButtonIcon
+                            style={localStyles.playButtonIcon}
+                            width={50}
+                            height={50}
+                        />
+                    </View>
+                    <View style={[localStyles.imageContainer, styles.shadow]}>
+                        <Image
+                            source={{ uri: imageUri }}
+                            style={[localStyles.image]}
+                        />
+                    </View>
                 </View>
                 <View style={localStyles.promptOuterContainer}>
                     <View style={localStyles.promptTextContainer}>
@@ -157,11 +166,17 @@ const confirmPost = () => {
 export default confirmPost;
 
 const localStyles = StyleSheet.create({
-    videoThumbnail: {
+    thumbnailContainer: {
         width: w * 0.4,
         height: w * 0.4 * (16 / 9),
+        borderRadius: 10,
     },
-    imageContainer: {
+    videoThumbnail: {
+        width: "100%",
+        height: "100%",
+        borderRadius: 10,
+    },
+    mediaContainer: {
         width: "100%",
         display: "flex",
         flexDirection: "row",
@@ -170,9 +185,17 @@ const localStyles = StyleSheet.create({
         gap: 20,
         height: h * 0.5,
     },
-    image: {
+    imageContainer: {
         width: w * 0.4,
         height: w * 0.4 * (16 / 9),
+        display: "flex",
+        justifyContent: "center",
+        borderRadius: 10,
+        backgroundColor: Colors.background,
+    },
+    image: {
+        width: w * 0.4,
+        height: w * 0.4,
     },
     promptOuterContainer: {
         display: "flex",
@@ -202,4 +225,10 @@ const localStyles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: Colors.blue,
     },
+    playButtonIcon: {
+        position: "absolute",
+        top: w * 0.2 * (16 / 9) - 25,
+        left: w * 0.2 - 25,
+        zIndex: 5,
+    }
 });

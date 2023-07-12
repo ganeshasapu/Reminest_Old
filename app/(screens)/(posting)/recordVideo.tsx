@@ -1,5 +1,4 @@
 import {
-    Button,
     Dimensions,
     SafeAreaView,
     StyleSheet,
@@ -14,10 +13,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import {
     getDoc,
     doc,
-    addDoc,
-    arrayUnion,
-    collection,
-    updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import {
@@ -25,11 +20,8 @@ import {
     PostType,
     UserType,
     collections,
-    mediaType,
 } from "../../schema";
 import { Camera, CameraType, VideoQuality } from "expo-camera";
-import { ResizeMode, Video } from "expo-av";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { FirebaseContext } from "../../auth";
 import { PostContext, RouteContext } from "./_layout";
 import VideoPreview from "./VideoPreview";
@@ -38,9 +30,9 @@ const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 const recordVideo = () => {
-    const { collectionId } = useLocalSearchParams();
     const [collectionData, setCollectionData] =
         useState<WeeklyPostsCollectionsType | null>(null);
+    const [timer, setTimer] = useState<number>(300);
     const [posts, setPosts] = useState<PostType[]>([]);
     const [authors, setAuthors] = useState<UserType[]>([]);
 
@@ -50,26 +42,30 @@ const recordVideo = () => {
         CameraType.front
     );
 
-    const router = useRouter();
 
     let lastPress = 0;
 
     const { user } = useContext(FirebaseContext);
     const { setCurrentRouteIndex } = useContext(RouteContext);
-    const { videoUri, setVideoUri, setPrompt, setCollectionId } = useContext(PostContext);
+    const { videoUri, setVideoUri, setPrompt, setCollectionID, collectionID } = useContext(PostContext);
 
-    if (!user) return <Text>No User Found</Text>;
 
-    if (!collectionId) return <Text>No post collection</Text>;
+    if (collectionID === ""){
+        setCollectionID(useLocalSearchParams().collectionId as string);
+    }
+
+    let beforeHighlight,
+        highlight,
+        afterHighlight = "";
 
     useEffect(() => {
-        setCollectionId(collectionId as string);
+        if (!collectionID) return console.log("No collection ID");
         const fetchWeeklyPostCollection = async () => {
             const weeklyPostCollectionRef = await getDoc(
                 doc(
                     db,
                     collections.weekly_post_collections,
-                    collectionId.toString()
+                    collectionID.toString()
                 )
             );
             if (weeklyPostCollectionRef.exists()) {
@@ -80,7 +76,7 @@ const recordVideo = () => {
         };
         fetchWeeklyPostCollection()
 
-    }, []);
+    }, [collectionID]);
 
     useEffect(() => {
         if (!collectionData) return console.log("No collection data");
@@ -126,14 +122,10 @@ const recordVideo = () => {
         };
         retrieveAuthorData();
     }, [posts]);
+
     if (!collectionData || !posts || authors.length != posts.length) {
         return <Text>Loading...</Text>;
     }
-
-    let beforeHighlight,
-        highlight,
-        afterHighlight = "";
-
 
 
     const splitPrompt = (prompt: string) => {
@@ -162,7 +154,21 @@ const recordVideo = () => {
             maxDuration: 20,
         };
 
+        const startTime = Date.now();
+
+        const updateElapsedTime = () => {
+            let timeElapsed = Math.round((Date.now() - startTime) / 1000);
+            if (timeElapsed >= 10){
+                stopRecording();
+            }
+            setTimer(300 - timeElapsed);
+        };
+
+        const interval = setInterval(updateElapsedTime, 1000);
+
         cameraRef.current?.recordAsync(options).then((video) => {
+            clearInterval(interval);
+            setTimer(300);
             setVideoUri(video.uri);
             setCurrentRouteIndex(1);
             setIsRecording(false);
@@ -185,52 +191,24 @@ const recordVideo = () => {
         lastPress = time;
     };
 
-    const saveVideo = async () => {
-        if (!videoUri) return;
+    const getFormattedTime = () => {
 
-        const fileName = `video_${Date.now()}.mov`;
+        let minutes = Math.floor(timer / 60); // Calculate the whole number of minutes
+        let remainingSeconds = timer % 60; // Calculate the remaining seconds
 
-        const response = await fetch(videoUri);
-        const blob = await response.blob();
-        const storageRef = ref(storage, fileName);
+       let formattedTime =
+           minutes +
+           ":" +
+           (remainingSeconds < 10 ? "0" : "") +
+           remainingSeconds.toString().padStart(1, "0");
 
-        try {
-            await uploadBytes(storageRef, blob);
-            const downloadURL = await getDownloadURL(storageRef);
-            console.log("Video uploaded to Firebase Storage:", downloadURL);
+        return formattedTime;
+    }
 
-            // Perform additional actions with the video URL
-            // For example, save the URL to Firestore or perform other operations
 
-            // Example: Saving video URL to a Firestore document
-            const postData = {
-                like_count: 0,
-                media: [{ type: "VIDEO", url: downloadURL }] as mediaType[],
-                timestamp: Date.now(),
-                author: doc(db, collections.users, user.uid),
-            };
-            const postCollectionRef = collection(db, collections.posts);
-            const postRef = await addDoc(postCollectionRef, postData);
+    if (!user) return <Text>No User Found</Text>;
 
-            const collectionRef = doc(
-                db,
-                collections.weekly_post_collections,
-                collectionId.toString()
-            );
-            await updateDoc(collectionRef, {
-                posts: arrayUnion(postRef),
-            });
-
-            const userRef = doc(db, collections.users, user.uid);
-            await updateDoc(userRef, {
-                posts: arrayUnion(postRef),
-            });
-
-            router.push("(screens)/feed");
-        } catch (error) {
-            console.error("Failed to upload video:", error);
-        }
-    };
+    if (!collectionID) return <Text>No post collection</Text>;
 
     if (videoUri) {
         return (
@@ -265,20 +243,29 @@ const recordVideo = () => {
                     >
                         <Camera
                             type={cameraDirection}
-                            style={localStyles.container}
                             ref={cameraRef}
+                            style={{ flex: 1, borderRadius: 20 }}
                         >
-                            <View style={localStyles.outerButtonContainer}>
-                                <View style={localStyles.innerButtonContainer}>
-                                    <TouchableOpacity
-                                        style={localStyles.button}
-                                        onPress={
+                            <Text style={localStyles.timer}>
+                                {getFormattedTime()}
+                            </Text>
+                            <View style={localStyles.container}>
+                                <TouchableOpacity
+                                    style={localStyles.outerButtonContainer}
+                                    onPress={
+                                        isRecording
+                                            ? stopRecording
+                                            : recordVideo
+                                    }
+                                >
+                                    <View
+                                        style={
                                             isRecording
-                                                ? stopRecording
-                                                : recordVideo
+                                                ? localStyles.innerButtonContainerRecording
+                                                : localStyles.innerButtonContainerNotRecording
                                         }
                                     />
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </Camera>
                     </TouchableOpacity>
@@ -340,14 +327,27 @@ const localStyles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 10,
     },
-    innerButtonContainer: {
+    innerButtonContainerNotRecording: {
         height: 55,
         width: 55,
         borderRadius: 50,
+        backgroundColor: "red",
+    },
+    innerButtonContainerRecording: {
+        height: 30,
+        width: 30,
         backgroundColor: "red",
     },
     button: {
         height: "100%",
         width: "100%",
     },
+    timer: {
+        position: "relative",
+        top: 10,
+        left: 10,
+        fontSize: 30,
+        fontFamily: "gabriel-sans",
+        color: "white",
+    }
 });

@@ -18,6 +18,29 @@ const PostCard = ({
     familyData,
 }: PostCardProps) => {
     const [postsData, setPostsData] = useState<PostType[] | null>(null);
+    const [intervals, setIntervals] = React.useState(1);
+    const [interval, setInterval] = React.useState(0);
+    const [width, setWidth] = React.useState(0);
+
+
+    const init = (w: number) => {
+        if (!postsData){
+            return;
+        }
+        setWidth(w);
+    }
+
+    const getInterval = (offset: any) => {
+        for (let i = 1; i <= intervals; i++) {
+            if (offset < (width / intervals) * i) {
+                return i - 1;
+            }
+            if (i == intervals) {
+                return i - 1;
+            }
+        }
+        return 0
+    };
 
     useEffect(() => {
         if (!post) {
@@ -32,9 +55,19 @@ const PostCard = ({
         fetchPostsData();
     }, [post]);
 
-    // console.log("post", post)
-    // console.log("postsData", postsData)
-    // console.log(postsData)
+    useEffect(() =>{
+        if (!postsData) {
+            return;
+        }
+
+        let count = 0;
+
+        postsData.forEach((item) => {
+            count += item.media.length;
+        });
+
+        setIntervals(count + 1);
+    }, [postsData, width])
 
     if (!post || !postsData) {
         return null;
@@ -46,8 +79,12 @@ const PostCard = ({
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
                 horizontal
-                scrollEventThrottle={100}
+                onScroll={(data) => {
+                    setInterval(getInterval(data.nativeEvent.contentOffset.x));
+                }}
+                scrollEventThrottle={300}
                 style={localStyles.scrollView}
+                onContentSizeChange={(w, h) => {init(w)}}
             >
                 <PostCardCover
                     userHasSubmitted={userHasSubmitted}
@@ -59,10 +96,11 @@ const PostCard = ({
                     ? postsData.map((post, index) =>
                           post.media.map((media, index) => (
                               <PostCardSlide
+                                currentInterval={interval}
                                   post={post}
                                   media={media}
                                   key={index}
-                                  imageIndex={index}
+                                  slideIndex={index}
                               />
                           ))
                       )

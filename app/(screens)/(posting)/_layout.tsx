@@ -20,8 +20,8 @@ interface PostContextProps {
     setThumbnailUri: React.Dispatch<React.SetStateAction<string>>;
     prompt: string;
     setPrompt: React.Dispatch<React.SetStateAction<string>>;
-    collectionId: string;
-    setCollectionId: React.Dispatch<React.SetStateAction<string>>;
+    collectionID: string;
+    setCollectionID: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const PostContext = createContext({} as PostContextProps);
@@ -32,7 +32,7 @@ const _layout = () => {
     const [imageUri, setImageUri] = useState("");
     const [thumbnailUri, setThumbnailUri] = useState("");
     const [prompt, setPrompt] = useState("");
-    const [collectionId, setCollectionId] = useState("");
+    const [collectionID, setCollectionID] = useState("");
 
     const routeValue = {
         currentRouteIndex,
@@ -48,8 +48,8 @@ const _layout = () => {
         setThumbnailUri,
         prompt,
         setPrompt,
-        collectionId,
-        setCollectionId,
+        collectionID,
+        setCollectionID,
     };
 
 

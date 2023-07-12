@@ -3,7 +3,7 @@ import Colors from "../../constants/Colors";
 
 export const styles = StyleSheet.create({
     text: {
-        color: "#fff",
+        color: "#000",
         fontSize: 16,
         fontFamily: "archivo",
     },
@@ -13,12 +13,12 @@ export const styles = StyleSheet.create({
         fontFamily: "open-sans",
     },
     bigtext: {
-        color: "#fff",
+        color: "#000",
         fontSize: 24,
         fontFamily: "gabriel-sans",
     },
     titletext: {
-        color: "#fff",
+        color: "#000",
         fontSize: 34,
         fontFamily: "gabriel-sans",
         lineHeight: 40,
@@ -41,9 +41,9 @@ export const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 10,
+            height: 2,
         },
-        shadowOpacity: 0.4,
+        shadowOpacity: 0.3,
         shadowRadius: 10,
     },
 });

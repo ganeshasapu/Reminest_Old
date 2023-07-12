@@ -11,6 +11,7 @@ import Colors from "../constants/Colors";
 import { styles } from "../app/stylesheets/styles";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../app/firebase";
+import LetterProfileImage from "./LetterProfileImage";
 
 export interface PostCardCoverProps {
     userHasSubmitted: boolean;
@@ -59,11 +60,16 @@ const PostCardCover = ({
         if (names.length === 2) {
             namesString += " and " + names[1];
         } else if (names.length > 2) {
-            for (let i = 1; i < names.length - 1; i++) {
+            for (let i = 1; i < Math.min(names.length, 2); i++) {
                 namesString += ", " + names[i];
             }
-            namesString += ", and " + names[names.length - 1];
+            if (names.length > 3) {
+                namesString += ", " + names[2] + ", and others";
+            } else {
+                namesString += " and " + names[2];
+            }
         }
+
         const verb = names.length === 1 ? "has" : "have";
 
         return namesString + " " + verb + " responded";
@@ -110,6 +116,15 @@ const PostCardCover = ({
             <Text style={localStyles.submittedNameText}>
                 {namesToString(respondedNames)}
             </Text>
+            <View style={localStyles.profileContainer}>
+                {respondedNames.slice(0, 3).map((name, index) => (
+                    <LetterProfileImage
+                        key={index + post.prompt}
+                        name={name}
+                        index={index}
+                    />
+                ))}
+            </View>
         </View>
     ) : (
         <View
@@ -133,6 +148,15 @@ const PostCardCover = ({
             <Text style={localStyles.unsubmittedNameText}>
                 {namesToString(respondedNames)}
             </Text>
+            <View style={localStyles.profileContainer}>
+                {respondedNames.slice(0, 3).map((name, index) => (
+                    <LetterProfileImage
+                        key={index + post.prompt}
+                        name={name}
+                        index={index}
+                    />
+                ))}
+            </View>
 
             <Text style={localStyles.largeText}>
                 Post this weeks prompt to view this story
@@ -175,6 +199,7 @@ const localStyles = StyleSheet.create({
         height: h * 0.8,
         width: w * 0.9,
         display: "flex",
+        justifyContent: "flex-end"
     },
     emptySpacing: {
         height: 0.1 * h,
@@ -205,13 +230,15 @@ const localStyles = StyleSheet.create({
         color: "#fff",
         fontSize: 15,
         fontFamily: "open-sans",
-        paddingVertical: 40,
+        paddingTop: 40,
+        paddingBottom: 20,
     },
     submittedNameText: {
         color: "#444",
         fontSize: 15,
         fontFamily: "open-sans",
-        paddingVertical: 40,
+        paddingTop: 40,
+        paddingBottom: 20,
     },
     button: {
         backgroundColor: Colors.blue,
@@ -221,11 +248,18 @@ const localStyles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        marginBottom: 40,
     },
     largeText: {
         color: "#fff",
         fontSize: 20,
         fontFamily: "gabriel-sans",
         paddingVertical: 20,
+    },
+    profileContainer: {
+        display: "flex",
+        flexDirection: "row",
+        gap: -10
+
     },
 });

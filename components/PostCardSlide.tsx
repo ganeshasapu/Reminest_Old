@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Image } from "expo-image";
-import {  PostType, UserType, mediaType } from "../app/schema";
+import { PostType, UserType, mediaType } from "../app/schema";
 import { ResizeMode, Video } from "expo-av";
 import { getDoc } from "firebase/firestore";
 
@@ -9,17 +9,20 @@ const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 interface PostCardSlideProps {
-    imageIndex: number;
+    slideIndex: number;
     post: PostType;
     media: mediaType;
+    currentInterval: number;
 }
 
-const PostCardSlide = ({
-    imageIndex,
-    post,
-    media,
-}: PostCardSlideProps) => {
+const PostCardSlide = ({ slideIndex, post, media, currentInterval }: PostCardSlideProps) => {
     const [author, setAuthor] = useState<UserType | null>(null);
+    const videoRef = useRef<Video | null>(null);
+    const handleVideoRef = useCallback((ref: Video | null) =>{
+        if (ref) {
+            videoRef.current = ref;
+        }
+    }, [])
 
     useEffect(() => {
         const fetchAuthors = async () => {
@@ -29,6 +32,15 @@ const PostCardSlide = ({
 
         fetchAuthors();
     }, [post]);
+
+     useEffect(() => {
+         if (currentInterval == slideIndex + 1) {
+             if (videoRef.current) {
+                 videoRef.current.playFromPositionAsync(0);
+             }
+         }
+     }, [currentInterval]);
+
 
     const monthNames = [
         "January",
@@ -45,33 +57,34 @@ const PostCardSlide = ({
         "December",
     ];
 
-    const getFormattedDate = (date: Date): string =>{
-         const formattedDate = `${
-             monthNames[date.getMonth()]
-         } ${date.getDate()}, ${date.getFullYear()}`;
-         return formattedDate;
-    }
+    const getFormattedDate = (date: Date): string => {
+        const formattedDate = `${
+            monthNames[date.getMonth()]
+        } ${date.getDate()}, ${date.getFullYear()}`;
+        return formattedDate;
+    };
 
     if (!post || !media || !author) {
         return null;
     }
 
-
     return (
         <View style={localStyles.container}>
             {media.type == "IMAGE" ? (
-                <Image
-                    key={imageIndex}
-                    style={localStyles.image}
-                    source={media.url}
-                />
+                <View style={localStyles.imageContaienr}>
+                    <Image
+                        key={slideIndex}
+                        style={localStyles.image}
+                        source={media.url}
+                    />
+                </View>
             ) : (
                 <Video
-                    style={localStyles.image}
+                    ref={handleVideoRef}
+                    style={localStyles.video}
                     source={{ uri: media.url }}
                     useNativeControls
                     resizeMode={ResizeMode.CONTAIN}
-                    shouldPlay={true}
                 />
             )}
             <View style={localStyles.captionContainer}>
@@ -93,10 +106,21 @@ const localStyles = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
     },
-    image: {
-        width: "100%",
-        height: "90%",
+    video: {
+        width: w * 0.9 - 20,
+        height: (w * 0.9 - 20) * (16 / 9),
         borderRadius: 20,
+    },
+    imageContaienr: {
+        width: w * 0.9 - 20,
+        height: (w * 0.9 - 20) * (16 / 9),
+        display: "flex",
+        justifyContent: "center",
+    },
+    image: {
+        width: w * 0.9 - 20,
+        height: w * 0.9 - 20,
+        borderRadius: 10,
     },
     captionContainer: {
         width: "100%",
