@@ -38,7 +38,7 @@ function RootLayoutNav() {
     return (
         <>
             <FirebaseProvider>
-                <Navigator>
+                <Navigator initialRouteName="(screens)/login">
                     <Slot />
                 </Navigator>
             </FirebaseProvider>

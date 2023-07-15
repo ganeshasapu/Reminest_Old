@@ -6,12 +6,13 @@ import {
     View,
     Image,
 } from "react-native";
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { styles } from '../../stylesheets/styles';
 import BasicInput from '../../../components/BasicInput';
 import Colors from '../../../constants/Colors';
 import { useRouter } from 'expo-router';
 import AppName from '../../../assets/vectors/AppName';
+import { RouteContext } from "./_layout";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 
@@ -20,15 +21,19 @@ const signUpSignIn = () => {
     const [phoneNumber, setPhoneNumber] = useState<string>("");
     const router = useRouter();
 
+    const { setCurrentRouteIndex } = useContext(RouteContext);
+
     const handlePhoneNumberChange = (inputText: string) => {
         setPhoneNumber(inputText);
     };
 
     const handleLogIn = () => {
         router.push("(screens)/(initializations)/initialization2");
+        setCurrentRouteIndex(1)
     };
     const handleSignUp = () => {
         router.push("(screens)/(initializations3)/userInitialization");
+        setCurrentRouteIndex(1)
     };
   return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>

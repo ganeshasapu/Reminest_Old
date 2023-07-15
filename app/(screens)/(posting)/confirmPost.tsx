@@ -7,7 +7,7 @@ import {
     Dimensions,
     TouchableOpacity,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Colors from "../../../constants/Colors";
 import { styles } from "../../stylesheets/styles";
 import { useRouter } from "expo-router";
@@ -25,7 +25,7 @@ import {
     uploadBytesResumable,
 } from "firebase/storage";
 import { storage, db } from "../../firebase";
-import { mediaType, collections, } from "../../schema";
+import { mediaType, collections } from "../../schema";
 import { FirebaseContext } from "../../auth";
 import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
@@ -34,13 +34,17 @@ import { PostContext } from "./_layout";
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
+const CHUNK_SIZE = 1024 * 1024;
+
 const confirmPost = () => {
     const router = useRouter();
     const { user } = useContext(FirebaseContext);
 
     if (!user) return <Text>No User Found</Text>;
 
-    const { thumbnailUri, imageUri, prompt, videoUri, collectionID } = useContext(PostContext);
+    const { thumbnailUri, imageUri, prompt, videoUri, collectionID } =
+        useContext(PostContext);
+    const [ uploadProgress, setUploadProgress ] = useState(0);
 
     // const videoUri = "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4";
     // const thumbnailUri = "https://picsum.photos/seed/696/3000/2000";
@@ -80,13 +84,46 @@ const confirmPost = () => {
 
         const response = await fetch(videoUri);
         const blob = await response.blob();
+        const totalChunks = Math.ceil(blob.size / CHUNK_SIZE);
+        const chunks = [];
+
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, blob.size);
+            const chunk = blob.slice(start, end);
+            chunks.push(chunk);
+        }
+
+
         const storageRef = ref(storage, fileName);
 
-        await uploadBytes(storageRef, blob).catch((error) => {
-            console.log(error);
+        const uploadTask = uploadBytesResumable(storageRef, blob);
+        return new Promise<string>((resolve, reject) => {
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    // Handle progress updates if needed
+                    setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+                    console.log(
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    );
+                },
+                (error) => {
+                    console.log("Upload failed:", error);
+                    reject(error);
+                },
+                () => {
+                    // Upload completed successfully
+                    getDownloadURL(storageRef)
+                        .then((downloadURL) => {
+                            resolve(downloadURL);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                }
+            );
         });
-        const downloadURL = await getDownloadURL(storageRef)
-        return downloadURL;
     };
 
     const createPost = async () => {
@@ -96,7 +133,10 @@ const confirmPost = () => {
         if (!videoDownloadUrl || !photoDownloadUrl) return;
         const postData = {
             like_count: 0,
-            media: [{ type: "VIDEO", url: videoDownloadUrl }, {type: "IMAGE", url: photoDownloadUrl}] as mediaType[],
+            media: [
+                { type: "VIDEO", url: videoDownloadUrl },
+                { type: "IMAGE", url: photoDownloadUrl },
+            ] as mediaType[],
             timestamp: Date.now(),
             author: doc(db, collections.users, user.uid),
         };
@@ -157,6 +197,13 @@ const confirmPost = () => {
                     >
                         <Text style={styles.buttonText}>Post Now</Text>
                     </TouchableOpacity>
+                    {uploadProgress > 0 ? (
+                        <Text style={localStyles.progressTest}>
+                            {"Upload Progress: " +
+                                uploadProgress.toFixed(0) +
+                                "%"}
+                        </Text>
+                    ) : null}
                 </View>
             </View>
         </SafeAreaView>
@@ -230,5 +277,10 @@ const localStyles = StyleSheet.create({
         top: w * 0.2 * (16 / 9) - 25,
         left: w * 0.2 - 25,
         zIndex: 5,
+    },
+    progressTest: {
+        marginTop: 20,
+        fontSize: 20,
+        fontFamily: "gabriel-sans",
     }
 });

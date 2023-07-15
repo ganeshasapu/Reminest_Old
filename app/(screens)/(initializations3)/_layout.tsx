@@ -1,7 +1,12 @@
 import { Navigator, Slot } from "expo-router";
-import InitializationScreenNav from "../../../components/InitializationScreenNav";
 import { createContext, useState } from "react";
-import PreviewScreenNav from "../../../components/PreviewScreenNav";
+import InitializationFlowNav from "./initializationFlowNav";
+
+interface FamilyRelation {
+    title: string;
+    selected: boolean;
+}
+
 interface FormContextProps {
     firstName: string;
     lastName: string;
@@ -11,7 +16,7 @@ interface FormContextProps {
     phoneNumber: string;
     familyInterests: string[];
     familyName: string;
-    relationship: string;
+    relationships: FamilyRelation[];
 
     setFirstName: (firstName: string) => void;
     setLastName: (lastName: string) => void;
@@ -21,12 +26,33 @@ interface FormContextProps {
     setPhoneNumber: (phoneNumber: string) => void;
     setFamilyInterests: (familyInterests: string[]) => void;
     setFamilyName: (familyName: string) => void;
-    setRelationship: (relationship: string) => void;
+    setRelationships: (relationship: string) => void;
 }
 
 export const FormContext = createContext({} as FormContextProps);
 
+interface RouteContextProps {
+    currentRouteIndex: number;
+    setCurrentRouteIndex: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const RouteContext = createContext({
+} as RouteContextProps);
+
+const familyOptions = [
+    { title: "Son", selected: false },
+    { title: "Daughter", selected: false },
+    { title: "Child", selected: false },
+    { title: "Mother", selected: false },
+    { title: "Father", selected: false },
+    { title: "Parent", selected: false },
+    { title: "Grandmother", selected: false },
+    { title: "Grandfather", selected: false },
+    { title: "Grandparent", selected: false },
+];
+
 const _layout = () => {
+    const [currentRouteIndex, setCurrentRouteIndex] = useState(1);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [birthday, setBirthday] = useState(new Date());
@@ -35,37 +61,51 @@ const _layout = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [familyInterests, setFamilyInterests] = useState<string[]>([]);
     const [familyName, setFamilyName] = useState("");
-    const [relationship, setRelationship] = useState("");
+    const [relationships, setRelationships] = useState(familyOptions);
+
+    function handleSetRelationships (relationship: string) {
+        const newRelationships = relationships.map((relation) => {
+            if (relation.title === relationship) {
+                return { ...relation, selected: !relation.selected };
+            }
+            return relation;
+        });
+        setRelationships(newRelationships);
+    }
 
     return (
-        <FormContext.Provider
-            value={{
-                firstName: firstName,
-                lastName: lastName,
-                birthday: birthday,
-                familyCode: familyCode,
-                uid: uid,
-                phoneNumber: phoneNumber,
-                familyInterests: familyInterests,
-                familyName: familyName,
-                relationship: relationship,
-
-                setFirstName,
-                setLastName,
-                setBirthday,
-                setFamilyCode,
-                setUid,
-                setPhoneNumber,
-                setFamilyInterests,
-                setFamilyName,
-                setRelationship,
-            }}
+        <RouteContext.Provider
+            value={{ currentRouteIndex, setCurrentRouteIndex }}
         >
-            <Navigator>
-                <Slot />
-                <InitializationScreenNav />
-            </Navigator>
-        </FormContext.Provider>
+            <FormContext.Provider
+                value={{
+                    firstName: firstName,
+                    lastName: lastName,
+                    birthday: birthday,
+                    familyCode: familyCode,
+                    uid: uid,
+                    phoneNumber: phoneNumber,
+                    familyInterests: familyInterests,
+                    familyName: familyName,
+                    relationships: relationships,
+
+                    setFirstName,
+                    setLastName,
+                    setBirthday,
+                    setFamilyCode,
+                    setUid,
+                    setPhoneNumber,
+                    setFamilyInterests,
+                    setFamilyName,
+                    setRelationships: handleSetRelationships,
+                }}
+            >
+                <Navigator>
+                    <Slot />
+                    <InitializationFlowNav />
+                </Navigator>
+            </FormContext.Provider>
+        </RouteContext.Provider>
     );
 };
 

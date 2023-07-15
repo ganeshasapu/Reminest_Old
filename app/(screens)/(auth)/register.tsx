@@ -358,15 +358,6 @@ const dropDownStyles = StyleSheet.create({
     icon: {
         marginRight: 5,
     },
-    label: {
-        position: "absolute",
-        backgroundColor: "white",
-        left: 22,
-        top: 8,
-        zIndex: 999,
-        paddingHorizontal: 8,
-        fontSize: 14,
-    },
     placeholderStyle: {
         fontSize: 16,
         color: "#fff",

@@ -3,7 +3,7 @@ import Colors from "../../../constants/Colors";
 import { usePathname, useRouter } from "expo-router";
 import ADIcon from "@expo/vector-icons/AntDesign";
 import { hexToRGBA } from "../../../utility/hexToRGBA";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { PostContext, RouteContext } from "./_layout";
 
 const baseRoute = "(screens)/(posting)/";
@@ -46,8 +46,6 @@ const PostingFlowNav = () => {
             router.push(baseRoute + routes[currentRouteIndex - 1]);
         }
     };
-
-    console.log(currentRouteIndex);
 
 
     const next = () => {
