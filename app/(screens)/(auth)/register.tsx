@@ -46,7 +46,7 @@ const register = () => {
     const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(
         null
     );
-    const [countryCode, setCountryCode] = useState("");
+    // const [countryCode, setCountryCode] = useState("");
     const [isFocus, setIsFocus] = useState(false);
     const [familyOptions, setFamilyOptions] = useState(initialFamilyOptions);
 
@@ -62,18 +62,20 @@ const register = () => {
 
     const context = useContext(FormContext);
     const {
-        phoneNumber,
+        // phoneNumber,
         firstName,
         lastName,
         birthday,
-        relationship,
         setPhoneNumber,
         setUid,
         setFirstName,
         setLastName,
         setBirthday,
-        setRelationship,
     } = context;
+
+    const countryCode = "+1";
+    const phoneNumber = "5197194919";
+    const setCountryCode = (text: string) => {}
 
     const { sendVerification, registerUser } = useContext(FirebaseContext);
 
@@ -117,12 +119,12 @@ const register = () => {
         }
     }, [value]);
 
+
     return (
         <View style={styles.container}>
             <FirebaseRecaptchaVerifierModal
                 ref={recaptchaVerifier}
                 firebaseConfig={firebaseConfig}
-                attemptInvisibleVerification={true}
             />
             <TextInput
                 placeholder="Enter your first name"
@@ -227,10 +229,14 @@ const register = () => {
             />
             <TouchableOpacity
                 onPress={() =>
+                    {
+                    console.log("send verification", countryCode + phoneNumber)
+                    console.log(recaptchaVerifier)
                     sendVerification(
                         recaptchaVerifier as MutableRefObject<FirebaseRecaptchaVerifierModal>,
                         countryCode + phoneNumber
                     )
+                    }
                 }
                 style={styles.sendVerification}
             >

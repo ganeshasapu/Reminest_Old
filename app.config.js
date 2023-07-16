@@ -56,6 +56,14 @@ export default {
                     cameraPermission: "Allow Reminest to access your camera.",
                 },
             ],
+            [
+                "expo-build-properties",
+                {
+                    ios: {
+                        useFrameworks: "static",
+                    },
+                },
+            ],
         ],
     },
 };

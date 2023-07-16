@@ -9,8 +9,13 @@ const home = () => {
     const { user, logoutUser } = useContext(FirebaseContext);
 
     useEffect(() => {
-        router.push("(screens)/(initializations3)/userInitialization");
-        // router.push("(screens)/(initializations3)/signUpSignIn");
+        // router.push("(screens)/(initializations3)/userInitialization");
+        // router.push("(screens)/(initializations3)/smsconfirmation");
+        router.push("(screens)/(initializations3)/signUpSignIn");
+        // router.push("(screens)/(initializations3)/familyLoginRegister");
+        // router.push("(screens)/(initializations3)/familyName");
+        // router.push("(screens)/(initializations3)/familyInterests");
+        // router.push("(screens)/(initializations3)/startReminest");
         // router.push("(screens)/(previews)/preview1");
         // router.push("(screens)/feed")
         // router.push("(screens)/(posting)/addMedia")

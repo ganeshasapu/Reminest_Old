@@ -3,11 +3,22 @@ import Colors from "../../../constants/Colors";
 import { usePathname, useRouter } from "expo-router";
 import ADIcon from "@expo/vector-icons/AntDesign";
 import { hexToRGBA } from "../../../utility/hexToRGBA";
-import { useContext, useEffect } from "react";
-import { FormContext, RouteContext } from "./_layout";
+import { MutableRefObject, useContext, useEffect, useRef } from "react";
+import { UserFormContext, RouteContext, FamilyFormContext } from "./_layout";
+import { FirebaseContext } from "../../auth";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { firebaseConfig } from "../../firebase";
 
 const baseRoute = "(screens)/(initializations3)/";
-const routes = ["signUpSignIn", "userInitialization"];
+const routes = [
+    "signUpSignIn",
+    "userInitialization",
+    "smsconfirmation",
+    "familyLoginRegister",
+    "familyName",
+    "familyInterests",
+    "startReminest"
+];
 
 const InitializationFlowNav = () => {
     const router = useRouter();
@@ -16,11 +27,28 @@ const InitializationFlowNav = () => {
     const { currentRouteIndex, setCurrentRouteIndex } =
         useContext(RouteContext);
 
-    // useEffect(() => {
-    //     if (pathName === "/previewVideo") {
-    //         setCurrentRouteIndex(1);
-    //     }
-    // }, [pathName]);
+    const {
+        firstName,
+        lastName,
+        phoneNumber,
+        countryCode,
+        setUserInitializationPressedNext,
+    } = useContext(UserFormContext);
+
+    const {familyName, setFamilyNamePressedNext} = useContext(FamilyFormContext)
+
+    const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(
+        null
+    );
+
+    useEffect(() => {
+        if (pathName === "/familyLoginRegister") {
+            setCurrentRouteIndex(3);
+        }
+        else if (pathName === "/familyName") {
+            setCurrentRouteIndex(4);
+        }
+    }, [pathName]);
 
 
     const previous = () => {
@@ -30,8 +58,28 @@ const InitializationFlowNav = () => {
 
     const next = () => {
         if (pathName === "/userInitialization") {
-
-            router.push(baseRoute + routes[currentRouteIndex + 1]);
+            if (firstName === "" || lastName === "" || phoneNumber === "") {
+                Alert.alert("Please fill out all fields")
+                setUserInitializationPressedNext(true)
+            }
+            else if (phoneNumber.length != 10) {
+                Alert.alert("Please enter a valid phone number")
+                setUserInitializationPressedNext(true)
+            }
+            else {
+                setCurrentRouteIndex(currentRouteIndex + 1);
+                router.push(baseRoute + routes[currentRouteIndex + 1]);
+            }
+        }
+        else if (pathName === "/familyName"){
+            if (familyName === "") {
+                Alert.alert("Please fill out all fields")
+                setFamilyNamePressedNext(true)
+            }
+            else{
+                setCurrentRouteIndex(currentRouteIndex + 1);
+                router.push(baseRoute + routes[currentRouteIndex + 1]);
+            }
         }
         else if (currentRouteIndex < routes.length - 1) {
             setCurrentRouteIndex(currentRouteIndex + 1);
@@ -59,7 +107,7 @@ const InitializationFlowNav = () => {
                 ) : (
                     <View />
                 )}
-                <TouchableOpacity
+                {currentRouteIndex != 2 && currentRouteIndex != 3  && currentRouteIndex != 6 ? <TouchableOpacity
                     onPress={next}
                     style={[
                         styles.navigationButton,
@@ -67,7 +115,7 @@ const InitializationFlowNav = () => {
                     ]}
                 >
                     <ADIcon name="arrowright" size={30} color="#fff" />
-                </TouchableOpacity>
+                </TouchableOpacity> : null}
             </View>
         </View>
     );

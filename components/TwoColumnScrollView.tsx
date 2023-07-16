@@ -9,10 +9,13 @@ const OptionItem = ({ title, selected, onSelect, color }: any) => {
             onPress={() => onSelect(title)}
             style={[
                 localStyles.optionButton,
-                { opacity: selected ? 1 : 0.5, backgroundColor: color },
+                {
+                    opacity: selected ? 1 : 0.5,
+                    backgroundColor: selected ? color : "#442626",
+                },
             ]}
         >
-            <Text style={[styles.text]}>{title}</Text>
+            <Text style={[styles.text, {color: "#fff"}]}>{title}</Text>
         </TouchableOpacity>
     );
 };
@@ -64,8 +67,8 @@ export default TwoColumnScrollView
 const localStyles = StyleSheet.create({
     optionButton: {
         backgroundColor: Colors.blue,
-        padding: 10,
-        paddingHorizontal: 20,
+        padding: 6,
+        paddingHorizontal: 8,
         borderRadius: 25,
         display: "flex",
         justifyContent: "center",

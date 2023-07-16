@@ -5,18 +5,17 @@ import {
     User,
     UserCredential,
     signInWithCredential,
-    signInWithEmailAndPassword,
     signOut,
 } from "firebase/auth";
 import { auth } from "./firebase";
 import { useRouter } from "expo-router";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import { MutableRefObject } from "react";
+import { signInWithPhoneNumber } from "firebase/auth";
 
 interface FirebaseContextProps {
     user: User | null;
     loading: boolean;
-    loginUser: (email: string, password: string) => void;
     logoutUser: () => void;
     sendVerification: (
         recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
@@ -39,15 +38,12 @@ const FirebaseProvider = ({ children }: any) => {
         checkLoginStatus();
     }, []);
 
-    const sendVerification = (
+    const sendVerification = async (
         recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
         fullNumber: string
     ) => {
         if (recaptchaVerifier.current == null) return;
-        const phoneProvider = new PhoneAuthProvider(auth);
-        phoneProvider
-            .verifyPhoneNumber(fullNumber, recaptchaVerifier.current)
-            .then(setVerificationId);
+        signInWithPhoneNumber(auth, fullNumber, recaptchaVerifier.current);
     };
 
     const confirmCode = (code: string) => {
@@ -80,21 +76,6 @@ const FirebaseProvider = ({ children }: any) => {
         }
     };
 
-    const loginUser = async (email: string, password: string) => {
-        try {
-            const response = await signInWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-            setUser(response.user);
-            await AsyncStorage.setItem("user", JSON.stringify(response.user));
-            router.push("(screens)/home");
-        } catch (error) {
-            console.log("Error logging in:", error);
-        }
-    };
-
     const logoutUser = async () => {
         try {
             await signOut(auth);
@@ -110,6 +91,7 @@ const FirebaseProvider = ({ children }: any) => {
         if (!code) {
             throw new Error("Invalid code");
         }
+        console.log("Register, VerificationId", verificationId)
         const credential = PhoneAuthProvider.credential(verificationId, code);
 
         const result = await signInWithCredential(auth, credential);
@@ -125,7 +107,6 @@ const FirebaseProvider = ({ children }: any) => {
     const value = {
         user,
         loading,
-        loginUser,
         logoutUser,
         sendVerification,
         confirmCode,
