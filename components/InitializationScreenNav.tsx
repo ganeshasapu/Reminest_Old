@@ -6,7 +6,7 @@ import { hexToRGBA } from "../utility/hexToRGBA";
 import { useState, useEffect } from "react";
 import LogoBackgroundFaded from "../assets/vectors/LogoBackgroundFaded";
 
-const baseRoute = "(screens)/(initializations3)/";
+const baseRoute = "(screens)/(initializations)/";
 const routes = [
     "signUpSignIn",
     "userInitialization",

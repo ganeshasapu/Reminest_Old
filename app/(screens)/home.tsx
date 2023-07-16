@@ -9,20 +9,19 @@ const home = () => {
     const { user, logoutUser } = useContext(FirebaseContext);
 
     useEffect(() => {
-        // router.push("(screens)/(initializations3)/userInitialization");
-        // router.push("(screens)/(initializations3)/smsconfirmation");
-        router.push("(screens)/(initializations3)/signUpSignIn");
-        // router.push("(screens)/(initializations3)/familyLoginRegister");
-        // router.push("(screens)/(initializations3)/familyName");
-        // router.push("(screens)/(initializations3)/familyInterests");
-        // router.push("(screens)/(initializations3)/startReminest");
+        // router.push("(screens)/(initializations)/userInitialization");
+        // router.push("(screens)/(initializations)/smsconfirmation");
+        // router.push("(screens)/(initializations)/signUpSignIn");
+        // router.push("(screens)/(initializations)/familyLoginRegister");
+        // router.push("(screens)/(initializations)/familyName");
+        // router.push("(screens)/(initializations)/familyInterests");
+        // router.push("(screens)/(initializations)/startReminest");
         // router.push("(screens)/(previews)/preview1");
         // router.push("(screens)/feed")
         // router.push("(screens)/(posting)/addMedia")
         // router.push("(screens)/(posting)/confirmPost");
         // router.push("(screens)/camera")
         // router.push("(screens)/(auth)/register")
-        // router.push("(screens)/(initializations2)/initialization1")
     }, []);
 
     return (

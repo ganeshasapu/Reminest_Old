@@ -41,6 +41,8 @@ const familyName = () => {
                     </Text>
                     <BasicInput
                         changeTextHandler={setFamilyName}
+                        autoFocus={true}
+                        autoCapitalize="words"
                         value={familyName}
                         style={{
                             marginTop: 5,

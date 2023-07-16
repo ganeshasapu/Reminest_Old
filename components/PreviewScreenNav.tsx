@@ -58,7 +58,7 @@ const PreviewScreenNav = () => {
                     <TouchableOpacity
                         onPress={() =>
                             router.push(
-                                "(screens)/(initializations3)/signUpSignIn"
+                                "(screens)/(initializations)/signUpSignIn"
                             )
                         }
                         style={[

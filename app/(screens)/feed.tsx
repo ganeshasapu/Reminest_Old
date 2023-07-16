@@ -4,22 +4,20 @@ import {
     Text,
     View,
     ScrollView,
-    TouchableOpacity,
 } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import { FirebaseContext } from "../auth";
 import { doc } from "firebase/firestore";
-import { getDoc, getDocs } from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { UserType, FamilyType, WeeklyPostsCollectionsType } from "../schema";
 import { collections } from "../schema";
-import { useRouter } from "expo-router";
 import LogoName from "../../assets/vectors/LogoName";
 import { styles } from "../stylesheets/styles";
 import Colors from "../../constants/Colors";
-import PostCardCover from "../../components/PostCardCover";
 import FamilyCode from "../../components/FamilyCode";
 import PostCard from "../../components/PostCard";
+import { useRouter } from "expo-router";
 
 const feed = () => {
     const [userData, setUserData] = useState<UserType | null>(null);
@@ -30,6 +28,11 @@ const feed = () => {
     const [isLoading, setLoading] = useState(true);
 
     const { user } = useContext(FirebaseContext);
+
+    // const router = useRouter();
+    // useEffect(() => {
+    //     router.push("/(screens)/home");
+    // }, []);
 
     useEffect(() => {
         const fetchUserData = async () => {

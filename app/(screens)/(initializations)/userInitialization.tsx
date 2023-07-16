@@ -132,6 +132,7 @@ const userInitialization = () => {
                         }}
                     >
                         <BasicInput
+                            autoCapitalize="words"
                             changeTextHandler={setFirstName}
                             value={firstName}
                             style={{
@@ -146,6 +147,7 @@ const userInitialization = () => {
                             placeholder="First Name"
                         ></BasicInput>
                         <BasicInput
+                            autoCapitalize="words"
                             changeTextHandler={setLastName}
                             value={lastName}
                             style={{

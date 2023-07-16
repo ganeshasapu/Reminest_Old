@@ -11,7 +11,6 @@ import { auth } from "./firebase";
 import { useRouter } from "expo-router";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import { MutableRefObject } from "react";
-import { signInWithPhoneNumber } from "firebase/auth";
 
 interface FirebaseContextProps {
     user: User | null;
@@ -21,7 +20,6 @@ interface FirebaseContextProps {
         recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
         fullNumber: string
     ) => void;
-    confirmCode: (code: string) => void;
     registerUser: (code: string) => Promise<UserCredential>;
 }
 
@@ -43,24 +41,17 @@ const FirebaseProvider = ({ children }: any) => {
         fullNumber: string
     ) => {
         if (recaptchaVerifier.current == null) return;
-        signInWithPhoneNumber(auth, fullNumber, recaptchaVerifier.current);
-    };
 
-    const confirmCode = (code: string) => {
-        if (!value) return;
-
-        const credential = PhoneAuthProvider.credential(verificationId, code);
-
-        signInWithCredential(auth, credential)
-            .then((result) => {
-                if (result.user === null) return;
-                setUser(result.user);
-                AsyncStorage.setItem("user", JSON.stringify(result.user));
-                router.push("(screens)/home");
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        const phoneProvider = new PhoneAuthProvider(auth);
+        await phoneProvider.verifyPhoneNumber(
+            fullNumber,
+            recaptchaVerifier.current
+        ).then((result) => {
+            console.log(result)
+            setVerificationId(result);
+        }).catch((error) => {
+            console.log(error)
+        })
     };
 
     const checkLoginStatus = async () => {
@@ -68,7 +59,7 @@ const FirebaseProvider = ({ children }: any) => {
             const storedUser = await AsyncStorage.getItem("user");
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
-                router.push("(screens)/home");
+                router.push("(screens)/feed");
             }
             setLoading(false);
         } catch (error) {
@@ -81,7 +72,7 @@ const FirebaseProvider = ({ children }: any) => {
             await signOut(auth);
             setUser(null);
             await AsyncStorage.removeItem("user");
-            router.push("(screens)/(initializations2)/initialization1");
+            router.push("(screens)/(initializations)/signUpSignIn");
         } catch (error) {
             console.log("Error logging out:", error);
         }
@@ -91,7 +82,12 @@ const FirebaseProvider = ({ children }: any) => {
         if (!code) {
             throw new Error("Invalid code");
         }
-        console.log("Register, VerificationId", verificationId)
+        if (!verificationId) {
+            throw new Error("No verification ID");
+        }
+
+        console.log(verificationId)
+
         const credential = PhoneAuthProvider.credential(verificationId, code);
 
         const result = await signInWithCredential(auth, credential);
@@ -100,6 +96,7 @@ const FirebaseProvider = ({ children }: any) => {
             throw new Error("Invalid result from Firebase authentication");
         }
         setUser(result.user);
+        AsyncStorage.setItem("user", JSON.stringify(result.user));
 
         return result;
     };
@@ -109,7 +106,6 @@ const FirebaseProvider = ({ children }: any) => {
         loading,
         logoutUser,
         sendVerification,
-        confirmCode,
         registerUser,
     };
 

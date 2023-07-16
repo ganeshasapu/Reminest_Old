@@ -1,4 +1,4 @@
-import { Dimensions, Keyboard, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { Alert, Dimensions, Keyboard, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Colors from '../../../constants/Colors'
 import { styles } from '../../stylesheets/styles'
@@ -6,6 +6,9 @@ import { UserFormContext } from "./_layout";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
 import Icon from "@expo/vector-icons/FontAwesome";
 import { useRouter } from 'expo-router'
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { UserType, collections } from '../../schema';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -13,7 +16,7 @@ const h = Dimensions.get("window").height;
 const CELL_COUNT = 5;
 
 const familiyLoginRegister = () => {
-    const {firstName, lastName} = useContext(UserFormContext)
+    const {firstName, lastName, uid, birthday, phoneNumber, countryCode} = useContext(UserFormContext)
     const [familyCode, setFamilyCode] = useState<string>("");
     const ref = useBlurOnFulfill({ value: familyCode, cellCount: CELL_COUNT });
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -23,14 +26,56 @@ const familiyLoginRegister = () => {
 
     const router = useRouter();
 
+
     const createFamily = () => {
-        router.push("(screens)/(initializations3)/familyName");
+        router.push("(screens)/(initializations)/familyName");
     };
+
+    async function createUser(familyCode: string) {
+        const userData: UserType = {
+            firstName: firstName,
+            lastName: lastName,
+            birthday: birthday,
+            phoneNumber: countryCode + phoneNumber,
+            families: [familyCode],
+            posts: [],
+            profilePicture: "",
+        };
+        try {
+            const userRef = doc(db, collections.users, uid);
+            await setDoc(userRef, userData);
+            console.log("Document written with ID:", uid);
+        } catch (error) {
+            console.error("Error adding document:", error);
+        }
+    }
+
+    async function joinFamily(familyCode: string) {
+        const familyRef = doc(db, collections.families, familyCode);
+        const familySnapshot = await getDoc(familyRef);
+        if (familySnapshot.data() === undefined || !familySnapshot.exists()) {
+            Alert.alert("Family does not exist");
+            return
+        }
+        const existingUsers = familySnapshot.data().users;
+        const updatedUsers = [...existingUsers, uid];
+
+        return setDoc(familyRef, {users: updatedUsers}, {merge: true})
+
+    }
 
     useEffect(() => {
         if (familyCode.length === CELL_COUNT) {
             Keyboard.dismiss();
-            console.log(familyCode);
+            try {
+                const success = joinFamily(familyCode);
+                if (!success) return;
+                createUser(familyCode);
+                router.push("(screens)/feed");
+            }
+            catch(err){
+                console.log(err)
+            }
         }
     }, [familyCode]);
 
@@ -147,12 +192,14 @@ const localStyles = StyleSheet.create({
         height: 90,
         borderWidth: 1,
         borderColor: Colors.blue,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
     },
     cell: {
-        lineHeight: 38,
-        fontSize: 24,
+        fontSize: 40,
         textAlign: "center",
-        color: "#fff",
+        color: Colors.blue,
     },
     focusCell: {
         borderColor: "#000",

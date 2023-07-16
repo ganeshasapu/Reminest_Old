@@ -7,9 +7,11 @@ import { MutableRefObject, useContext, useEffect, useRef } from "react";
 import { UserFormContext, RouteContext, FamilyFormContext } from "./_layout";
 import { FirebaseContext } from "../../auth";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { firebaseConfig } from "../../firebase";
+import { db, firebaseConfig } from "../../firebase";
+import { query, collection, where, getDocs } from "firebase/firestore";
+import { collections } from "../../schema";
 
-const baseRoute = "(screens)/(initializations3)/";
+const baseRoute = "(screens)/(initializations)/";
 const routes = [
     "signUpSignIn",
     "userInitialization",
@@ -56,20 +58,33 @@ const InitializationFlowNav = () => {
         router.push(baseRoute + routes[currentRouteIndex - 1]);
     };
 
-    const next = () => {
+    const next = async () => {
         if (pathName === "/userInitialization") {
             if (firstName === "" || lastName === "" || phoneNumber === "") {
                 Alert.alert("Please fill out all fields")
                 setUserInitializationPressedNext(true)
+                return
             }
             else if (phoneNumber.length != 10) {
                 Alert.alert("Please enter a valid phone number")
                 setUserInitializationPressedNext(true)
+                return
             }
-            else {
-                setCurrentRouteIndex(currentRouteIndex + 1);
-                router.push(baseRoute + routes[currentRouteIndex + 1]);
-            }
+
+             const q = query(
+                 collection(db, collections.users),
+                 where("phoneNumber", "==", countryCode + phoneNumber)
+             );
+
+             const querySnapshot = await getDocs(q);
+
+             if (!querySnapshot.empty) {
+                 Alert.alert("This phone number is already registered");
+                 return;
+             } else {
+                 setCurrentRouteIndex(currentRouteIndex + 1);
+                 router.push(baseRoute + routes[currentRouteIndex + 1]);
+             }
         }
         else if (pathName === "/familyName"){
             if (familyName === "") {

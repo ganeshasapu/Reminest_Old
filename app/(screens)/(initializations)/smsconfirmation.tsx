@@ -5,8 +5,8 @@ import { styles } from '../../stylesheets/styles';
 import LogoDark from '../../../assets/vectors/LogoDark';
 import { UserFormContext } from "./_layout";
 import BasicInput from '../../../components/BasicInput';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { auth, firebaseConfig } from '../../firebase';
+import { FirebaseRecaptchaVerifierModal,   } from 'expo-firebase-recaptcha';
+import { firebaseConfig } from '../../firebase';
 import { FirebaseContext } from '../../auth';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -29,7 +29,12 @@ const smsconfirmation = () => {
         registerUser(code)
             .then((result: any) => {
                 setUid(result.user.uid)
-                router.push("(screens)/(initializations3)/familyLoginRegister");
+                if (login) {
+                    router.push("(screens)/feed")
+                }
+                else {
+                    router.push("(screens)/(initializations)/familyLoginRegister");
+                }
             })
             .catch((error: any) => {
                 console.log(error);
@@ -41,12 +46,11 @@ const smsconfirmation = () => {
 
     useEffect(() => {
         if (!recaptchaVerifier.current) return;
-        recaptchaVerifier.current._reset();
         sendVerification(
             recaptchaVerifier as MutableRefObject<FirebaseRecaptchaVerifierModal>,
             countryCode + phoneNumber
         );
-    }, [recaptchaVerifier, countryCode, phoneNumber]);
+    }, [recaptchaVerifier]);
 
     useEffect(() => {
         if (code.length === CELL_COUNT) {
@@ -61,8 +65,6 @@ const smsconfirmation = () => {
               <FirebaseRecaptchaVerifierModal
                   ref={recaptchaVerifier}
                   firebaseConfig={firebaseConfig}
-                  title='Prove you are human!'
-                  cancelLabel='Close'
                 //   attemptInvisibleVerification={true}
               />
               <View style={styles.mainContainer}>
