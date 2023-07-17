@@ -23,14 +23,9 @@ import {
     CountryItem,
     CountryPicker,
 } from "react-native-country-codes-picker";
-import { FirebaseContext } from "../../auth";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { db, firebaseConfig } from "../../firebase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { db } from "../../firebase";
 import {
     collection,
-    doc,
-    getDoc,
     getDocs,
     query,
     where,
@@ -117,6 +112,7 @@ const signUpSignIn = () => {
             <SafeAreaView
                 style={{ flex: 1, backgroundColor: Colors.background }}
             >
+                {/* Modal */}
                 <CountryPicker
                     show={show}
                     searchMessage="Test"
@@ -242,6 +238,7 @@ const localStyles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         gap: 5,
+        marginTop: 10,
     },
     countryCodeContainer: {
         display: "flex",

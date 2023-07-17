@@ -24,6 +24,9 @@ export default {
                 process.env.FIREBASE_MESSAGING_SENDER_ID,
             FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
             FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
+            eas: {
+                projectId: "8503928b-ceed-4938-88f6-6415585053e0",
+            },
         },
         ios: {
             supportsTablet: true,
@@ -33,6 +36,8 @@ export default {
                 NSPhotoLibraryUsageDescription:
                     "This app requires access to the photo library.",
             },
+            bundleIdentifier: "com.reminest.app",
+            googleServicesFile: "./GoogleService-Info.plist",
         },
         android: {
             adaptiveIcon: {

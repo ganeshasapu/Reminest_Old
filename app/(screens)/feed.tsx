@@ -17,7 +17,6 @@ import { styles } from "../stylesheets/styles";
 import Colors from "../../constants/Colors";
 import FamilyCode from "../../components/FamilyCode";
 import PostCard from "../../components/PostCard";
-import { useRouter } from "expo-router";
 
 const feed = () => {
     const [userData, setUserData] = useState<UserType | null>(null);
@@ -34,6 +33,7 @@ const feed = () => {
     //     router.push("/(screens)/home");
     // }, []);
 
+    console.log("user", user)
     useEffect(() => {
         const fetchUserData = async () => {
             if (user) {
@@ -66,6 +66,7 @@ const feed = () => {
     useEffect(() => {
         const fetchWeeklyPostsCollections = async () => {
             if (familyData && familyData.weekly_posts_collections) {
+                console.log("Test")
                 const weeklyPostsCollectionsData = await Promise.all(
                     familyData.weekly_posts_collections.map(async (id) => {
                         const docSnap = await getDoc(
@@ -92,6 +93,9 @@ const feed = () => {
 
     if (user === null) return;
 
+    console.log("userData", userData)
+    console.log("familyData", familyData)
+    console.log("weeklyPostsCollections", weeklyPostsCollections)
     if (
         isLoading ||
         !userData ||

@@ -39,9 +39,6 @@ const InitializationFlowNav = () => {
 
     const {familyName, setFamilyNamePressedNext} = useContext(FamilyFormContext)
 
-    const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(
-        null
-    );
 
     useEffect(() => {
         if (pathName === "/familyLoginRegister") {
@@ -102,10 +99,6 @@ const InitializationFlowNav = () => {
         }
     };
 
-    if (currentRouteIndex == 0) {
-        return <View />;
-    }
-
     return (
         <View style={styles.buttonGroupContainer}>
             <View style={styles.buttonGroup}>
@@ -122,7 +115,7 @@ const InitializationFlowNav = () => {
                 ) : (
                     <View />
                 )}
-                {currentRouteIndex != 2 && currentRouteIndex != 3  && currentRouteIndex != 6 ? <TouchableOpacity
+                {currentRouteIndex != 0 && currentRouteIndex != 2 && currentRouteIndex != 3  && currentRouteIndex != 6 ? <TouchableOpacity
                     onPress={next}
                     style={[
                         styles.navigationButton,

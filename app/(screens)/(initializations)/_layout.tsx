@@ -102,7 +102,7 @@ const initialMilestoneOptions = [
 ];
 
 const _layout = () => {
-    const [currentRouteIndex, setCurrentRouteIndex] = useState(1);
+    const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [countryCode, setCountryCode] = useState("+1" as string);

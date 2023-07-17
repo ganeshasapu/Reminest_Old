@@ -86,8 +86,6 @@ const FirebaseProvider = ({ children }: any) => {
             throw new Error("No verification ID");
         }
 
-        console.log(verificationId)
-
         const credential = PhoneAuthProvider.credential(verificationId, code);
 
         const result = await signInWithCredential(auth, credential);

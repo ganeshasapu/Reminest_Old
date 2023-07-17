@@ -1,4 +1,5 @@
 import {
+    Button,
     Dimensions,
     SafeAreaView,
     StyleSheet,
@@ -9,7 +10,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Colors from "../../../constants/Colors";
 import { styles } from "../../stylesheets/styles";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import {
     getDoc,
     doc,
@@ -41,6 +42,7 @@ const recordVideo = () => {
     const [cameraDirection, setCameraDirection] = useState<CameraType>(
         CameraType.front
     );
+    const [permission, requestPermission] = Camera.useCameraPermissions();
 
 
     let lastPress = 0;
@@ -57,6 +59,10 @@ const recordVideo = () => {
     let beforeHighlight,
         highlight,
         afterHighlight = "";
+
+    useEffect(() => {
+        requestPermission();
+    }, [])
 
     useEffect(() => {
         if (!collectionID) return console.log("No collection ID");
@@ -205,6 +211,33 @@ const recordVideo = () => {
         return formattedTime;
     }
 
+    if (!permission) {
+        return (
+            <SafeAreaView
+                style={{ flex: 1, backgroundColor: Colors.background }}
+            >
+                <Text>Permission not granted</Text>
+                <Button
+                    title="Request Permission"
+                    onPress={requestPermission}
+                />
+            </SafeAreaView>
+        );
+    }
+
+    if (!permission.granted) {
+        return (
+            <SafeAreaView
+                style={{ flex: 1, backgroundColor: Colors.background }}
+            >
+                <Text>Permission not granted</Text>
+                <Button
+                    title="Request Permission"
+                    onPress={requestPermission}
+                />
+            </SafeAreaView>
+        );
+    }
 
     if (!user) return <Text>No User Found</Text>;
 

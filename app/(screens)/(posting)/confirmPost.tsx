@@ -104,9 +104,6 @@ const confirmPost = () => {
                 (snapshot) => {
                     // Handle progress updates if needed
                     setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-                    console.log(
-                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                    );
                 },
                 (error) => {
                     console.log("Upload failed:", error);
