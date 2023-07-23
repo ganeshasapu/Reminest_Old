@@ -30,6 +30,8 @@ import { FirebaseContext } from "../../auth";
 import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
 import { PostContext } from "./_layout";
+import Loading from "../loading";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -48,17 +50,13 @@ const confirmPost = () => {
 
     // const videoUri = "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4";
     // const thumbnailUri = "https://picsum.photos/seed/696/3000/2000";
-    // const imageUri = "https://picsum.photos/seed/696/3000/2000";
+    // // const imageUri = "https://picsum.photos/seed/696/3000/2000";
+    // const imageUri = ""
     // const prompt = "What is your favorite color?";
     // const collectionID = 1;
 
-    if (!thumbnailUri || !imageUri || !prompt || !collectionID || !videoUri) {
-        <SafeAreaView>
-            <Text>Loading...</Text>
-        </SafeAreaView>;
-    }
-
     const savePhoto = async (): Promise<string> => {
+        if (!imageUri) return "";
         const fileName = `photos/photo_${Date.now()}.jpg`;
 
         if (!imageUri) return "";
@@ -127,13 +125,13 @@ const confirmPost = () => {
         const videoDownloadUrl = await saveVideo();
         const photoDownloadUrl = await savePhoto();
 
-        if (!videoDownloadUrl || !photoDownloadUrl) return;
+        if (!videoDownloadUrl) return;
+
+        const media = [{ type: "VIDEO", url: videoDownloadUrl }, photoDownloadUrl ? { type: "PHOTO", url: photoDownloadUrl } : null];
+
         const postData = {
             like_count: 0,
-            media: [
-                { type: "VIDEO", url: videoDownloadUrl },
-                { type: "IMAGE", url: photoDownloadUrl },
-            ] as mediaType[],
+            media: media as mediaType[],
             timestamp: Date.now(),
             author: doc(db, collections.users, user.uid),
         };
@@ -159,6 +157,12 @@ const confirmPost = () => {
         router.push("(screens)/feed");
     };
 
+    if (!thumbnailUri || !imageUri || !prompt || !collectionID || !videoUri) {
+        <SafeAreaView>
+            <Loading />
+        </SafeAreaView>;
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
             <View style={styles.mainContainer}>
@@ -178,10 +182,20 @@ const confirmPost = () => {
                         />
                     </View>
                     <View style={[localStyles.imageContainer, styles.shadow]}>
-                        <Image
-                            source={{ uri: imageUri }}
-                            style={[localStyles.image]}
-                        />
+                        {imageUri ? (
+                            <Image
+                                source={{ uri: imageUri }}
+                                style={[localStyles.image]}
+                            />
+                        ) : (
+                            <View style={{ justifyContent: "center", alignItems: "center"}}>
+                            <MaterialCommunityIcons
+                                name="image-off"
+                                size={85}
+                                color="#442626"
+                            />
+                            </View>
+                        )}
                     </View>
                 </View>
                 <View style={localStyles.promptOuterContainer}>

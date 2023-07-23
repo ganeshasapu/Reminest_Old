@@ -65,7 +65,7 @@ const smsconfirmation = () => {
               <FirebaseRecaptchaVerifierModal
                   ref={recaptchaVerifier}
                   firebaseConfig={firebaseConfig}
-                //   attemptInvisibleVerification={true}
+                  attemptInvisibleVerification={true}
               />
               <View style={styles.mainContainer}>
                   <LogoDark width={40} height={40} />

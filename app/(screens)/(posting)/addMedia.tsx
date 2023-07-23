@@ -24,6 +24,8 @@ const addMedia = () => {
     const { user } = useContext(FirebaseContext);
     const { imageUri, setImageUri } = useContext(PostContext);
 
+    const router = useRouter();
+
     const { currentRouteIndex, setCurrentRouteIndex } =
         useContext(RouteContext);
 
@@ -45,9 +47,16 @@ const addMedia = () => {
         });
 
         if (!result.canceled) {
+            setCurrentRouteIndex(currentRouteIndex + 1);
             setImageUri(result.assets[0].uri);
         }
     };
+
+    const skipImage = () => {
+        console.log("Test")
+        router.push("/(screens)/(posting)/confirmPost");
+        setCurrentRouteIndex(currentRouteIndex + 1);
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
@@ -81,7 +90,7 @@ const addMedia = () => {
                         <Text style={localStyles.addImageText}>
                             Click to add a photo
                         </Text>
-                        <TouchableOpacity style={localStyles.skipButton}>
+                        <TouchableOpacity style={localStyles.skipButton} onPress={skipImage}>
                             <Text style={localStyles.skipButtonText}>
                                 No Thanks
                             </Text>

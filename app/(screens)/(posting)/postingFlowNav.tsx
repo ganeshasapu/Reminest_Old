@@ -7,14 +7,14 @@ import { useContext, useEffect } from "react";
 import { PostContext, RouteContext } from "./_layout";
 
 const baseRoute = "(screens)/(posting)/";
-const routes = ["recordVideo", "previewVideo", "addMedia", "confirmPost"];
+const routes = ["recordVideo", "previewVideo", "addMedia", "previewImage", "confirmPost"];
 
 const PostingFlowNav = () => {
     const router = useRouter();
     const pathName = usePathname();
 
     const { currentRouteIndex, setCurrentRouteIndex } = useContext(RouteContext)
-    const { setVideoUri, imageUri } = useContext(PostContext);
+    const { setVideoUri, imageUri, setImageUri } = useContext(PostContext);
 
     useEffect(() => {
         if (pathName === "/previewVideo") {
@@ -23,6 +23,7 @@ const PostingFlowNav = () => {
     }, [pathName]);
 
     const previous = () => {
+        console.log(currentRouteIndex)
         if (currentRouteIndex == 1) {
             Alert.alert("Attention!", "If you go back you will lose the current recording", [
                 {
@@ -37,9 +38,28 @@ const PostingFlowNav = () => {
                 }},
             ]);
         }
-        else if (currentRouteIndex == 2) {
-            router.push(baseRoute + "recordVideo");
-            setCurrentRouteIndex(currentRouteIndex - 1);
+        else if (currentRouteIndex == 3) {
+             Alert.alert(
+                 "Attention!",
+                 "If you go back you will lose the current Image",
+                 [
+                     {
+                         text: "Cancel",
+                         onPress: () => console.log("Cancel Pressed"),
+                         style: "cancel",
+                     },
+                     {
+                         text: "OK",
+                         onPress: () => {
+                             router.push(
+                                 baseRoute + routes[currentRouteIndex - 1]
+                             );
+                             setCurrentRouteIndex(currentRouteIndex - 1);
+                             setImageUri("");
+                         },
+                     },
+                 ]
+             );
         }
         else if (currentRouteIndex > 0) {
             setCurrentRouteIndex(currentRouteIndex - 1);

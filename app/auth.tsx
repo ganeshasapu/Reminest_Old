@@ -1,10 +1,12 @@
 import React, { createContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+    ConfirmationResult,
     PhoneAuthProvider,
     User,
     UserCredential,
     signInWithCredential,
+    signInWithPhoneNumber,
     signOut,
 } from "firebase/auth";
 import { auth } from "./firebase";
@@ -29,6 +31,8 @@ const FirebaseProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [verificationId, setVerificationId] = useState("");
+    const [confirmationResult, setConfirmationResult] =
+        useState<ConfirmationResult | null>(null);
 
     const router = useRouter();
 
@@ -42,16 +46,27 @@ const FirebaseProvider = ({ children }: any) => {
     ) => {
         if (recaptchaVerifier.current == null) return;
 
-        const phoneProvider = new PhoneAuthProvider(auth);
-        await phoneProvider.verifyPhoneNumber(
+        // const phoneProvider = new PhoneAuthProvider(auth);
+        // recaptchaVerifier.current._reset()
+        // console.log(recaptchaVerifier.current.state)
+        const confirmationResult = await signInWithPhoneNumber(
+            auth,
             fullNumber,
-            recaptchaVerifier.current
-        ).then((result) => {
-            console.log(result)
-            setVerificationId(result);
-        }).catch((error) => {
-            console.log(error)
-        })
+         );
+
+        console.log(confirmationResult)
+
+        setConfirmationResult(confirmationResult);
+
+        // await phoneProvider.verifyPhoneNumber(
+        //     fullNumber,
+        //     recaptchaVerifier.current,
+        // ).then((result) => {
+        //     console.log(result)
+        //     setVerificationId(result);
+        // }).catch((error) => {
+        //     console.log(error)
+        // })
     };
 
     const checkLoginStatus = async () => {
@@ -82,21 +97,23 @@ const FirebaseProvider = ({ children }: any) => {
         if (!code) {
             throw new Error("Invalid code");
         }
-        if (!verificationId) {
+        if (!verificationId || !confirmationResult) {
             throw new Error("No verification ID");
         }
 
-        const credential = PhoneAuthProvider.credential(verificationId, code);
+        // const credential = PhoneAuthProvider.credential(verificationId, code);
+        const credential = await confirmationResult.confirm("123456");
 
-        const result = await signInWithCredential(auth, credential);
+        // const result = await signInWithCredential(auth, credential);
+        setUser(credential.user);
 
-        if (!result || !result.user) {
-            throw new Error("Invalid result from Firebase authentication");
-        }
-        setUser(result.user);
-        AsyncStorage.setItem("user", JSON.stringify(result.user));
+        // if (!result || !result.user) {
+        //     throw new Error("Invalid result from Firebase authentication");
+        // }
+        // setUser(result.user);
+        AsyncStorage.setItem("user", JSON.stringify(credential.user));
 
-        return result;
+        return credential;
     };
 
     const value = {

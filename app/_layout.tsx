@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack, Slot, Navigator } from "expo-router";
 import { useEffect } from "react";
 import { FirebaseProvider } from "./auth";
+import Loading from "./(screens)/loading";
 
 export {
     // Catch any errors thrown by the Layout component.

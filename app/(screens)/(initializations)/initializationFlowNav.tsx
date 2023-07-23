@@ -5,8 +5,6 @@ import ADIcon from "@expo/vector-icons/AntDesign";
 import { hexToRGBA } from "../../../utility/hexToRGBA";
 import { MutableRefObject, useContext, useEffect, useRef } from "react";
 import { UserFormContext, RouteContext, FamilyFormContext } from "./_layout";
-import { FirebaseContext } from "../../auth";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import { db, firebaseConfig } from "../../firebase";
 import { query, collection, where, getDocs } from "firebase/firestore";
 import { collections } from "../../schema";

@@ -26,6 +26,7 @@ import { Camera, CameraType, VideoQuality } from "expo-camera";
 import { FirebaseContext } from "../../auth";
 import { PostContext, RouteContext } from "./_layout";
 import VideoPreview from "./VideoPreview";
+import Loading from "../loading";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -63,6 +64,8 @@ const recordVideo = () => {
     useEffect(() => {
         requestPermission();
     }, [])
+
+    console.log("Test")
 
     useEffect(() => {
         if (!collectionID) return console.log("No collection ID");
@@ -130,7 +133,7 @@ const recordVideo = () => {
     }, [posts]);
 
     if (!collectionData || !posts || authors.length != posts.length) {
-        return <Text>Loading...</Text>;
+        return <Loading />;
     }
 
 
