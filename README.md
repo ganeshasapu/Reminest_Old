@@ -16,7 +16,5 @@
 ### In app
 
 Basic login credentials:
-
-email: test@gmail.com
-
-password: password
+Phone-number: +1 1234567890
+Code: 123456
