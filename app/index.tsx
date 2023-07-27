@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Redirect } from 'expo-router'
+import { FirebaseContext } from './auth';
+import Loading from './(screens)/loading';
 
 const index = () => {
+
+  const { checkLoginStatus, loading, user } = useContext(FirebaseContext);
+
+  useEffect(() => {
+      checkLoginStatus();
+  }, []);
+
+  if (loading) {
+      return <Loading />;
+  }
+
+  if (user){
+    return <Redirect href="(screens)/feed" />;
+  }
+
+
   return (
       // <Redirect href="(screens)/register" />
       // <Redirect href="(screens)/home" />

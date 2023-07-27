@@ -1,12 +1,10 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-    ConfirmationResult,
+    PhoneAuthCredential,
     PhoneAuthProvider,
     User,
-    UserCredential,
     signInWithCredential,
-    signInWithPhoneNumber,
     signOut,
 } from "firebase/auth";
 import { auth } from "./firebase";
@@ -22,7 +20,8 @@ interface FirebaseContextProps {
         recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
         fullNumber: string
     ) => void;
-    registerUser: (code: string) => Promise<UserCredential>;
+    registerUser: (code: string) => Promise<PhoneAuthCredential>;
+    checkLoginStatus: () => void;
 }
 
 const FirebaseContext = createContext({} as FirebaseContextProps);
@@ -31,14 +30,8 @@ const FirebaseProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [verificationId, setVerificationId] = useState("");
-    const [confirmationResult, setConfirmationResult] =
-        useState<ConfirmationResult | null>(null);
 
     const router = useRouter();
-
-    useEffect(() => {
-        checkLoginStatus();
-    }, []);
 
     const sendVerification = async (
         recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
@@ -46,27 +39,15 @@ const FirebaseProvider = ({ children }: any) => {
     ) => {
         if (recaptchaVerifier.current == null) return;
 
-        // const phoneProvider = new PhoneAuthProvider(auth);
-        // recaptchaVerifier.current._reset()
-        // console.log(recaptchaVerifier.current.state)
-        const confirmationResult = await signInWithPhoneNumber(
-            auth,
+        const phoneProvider = new PhoneAuthProvider(auth);
+        await phoneProvider.verifyPhoneNumber(
             fullNumber,
-         );
-
-        console.log(confirmationResult)
-
-        setConfirmationResult(confirmationResult);
-
-        // await phoneProvider.verifyPhoneNumber(
-        //     fullNumber,
-        //     recaptchaVerifier.current,
-        // ).then((result) => {
-        //     console.log(result)
-        //     setVerificationId(result);
-        // }).catch((error) => {
-        //     console.log(error)
-        // })
+            recaptchaVerifier.current,
+        ).then((result) => {
+            setVerificationId(result);
+        }).catch((error) => {
+            console.log(error)
+        })
     };
 
     const checkLoginStatus = async () => {
@@ -74,7 +55,6 @@ const FirebaseProvider = ({ children }: any) => {
             const storedUser = await AsyncStorage.getItem("user");
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
-                router.push("(screens)/feed");
             }
             setLoading(false);
         } catch (error) {
@@ -97,21 +77,21 @@ const FirebaseProvider = ({ children }: any) => {
         if (!code) {
             throw new Error("Invalid code");
         }
-        if (!verificationId || !confirmationResult) {
+        if (!verificationId) {
             throw new Error("No verification ID");
         }
 
-        // const credential = PhoneAuthProvider.credential(verificationId, code);
-        const credential = await confirmationResult.confirm("123456");
+        const credential = PhoneAuthProvider.credential(verificationId, code);
+        // const credential = await confirmationResult.confirm("123456");
 
-        // const result = await signInWithCredential(auth, credential);
-        setUser(credential.user);
+        const result = await signInWithCredential(auth, credential);
+        // setUser(credential.user);
 
-        // if (!result || !result.user) {
-        //     throw new Error("Invalid result from Firebase authentication");
-        // }
-        // setUser(result.user);
-        AsyncStorage.setItem("user", JSON.stringify(credential.user));
+        if (!result || !result.user) {
+            throw new Error("Invalid result from Firebase authentication");
+        }
+        setUser(result.user);
+        AsyncStorage.setItem("user", JSON.stringify(result.user));
 
         return credential;
     };
@@ -122,6 +102,7 @@ const FirebaseProvider = ({ children }: any) => {
         logoutUser,
         sendVerification,
         registerUser,
+        checkLoginStatus
     };
 
     return (

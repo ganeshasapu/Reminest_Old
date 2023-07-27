@@ -4,6 +4,7 @@ export default {
     expo: {
         name: "Reminest",
         slug: "Reminest",
+        owner: "reminesttesting",
         version: "1.0.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",

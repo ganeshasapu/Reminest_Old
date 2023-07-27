@@ -17,22 +17,22 @@ interface UserFormContextProps {
     lastName: string;
     birthday: Date;
     familyCode: number;
-    uid: string;
     phoneNumber: string;
     familyInterests: string[];
     relationships: FamilyRelation[];
     countryCode: string;
+    uid: string;
     userInitializationPressedNext: boolean;
 
     setFirstName: (firstName: string) => void;
     setLastName: (lastName: string) => void;
     setBirthday: (birthday: Date) => void;
     setFamilyCode: (familyCode: number) => void;
-    setUid: (uid: string) => void;
     setPhoneNumber: (phoneNumber: string) => void;
     setFamilyInterests: (familyInterests: string[]) => void;
     setRelationships: (relationship: string) => void;
     setCountryCode: (countryCode: string) => void;
+    setUid: (uid: string) => void;
     setUserInitializationPressedNext: (userInitializationPressedNext: boolean) => void;
 }
 
@@ -194,11 +194,11 @@ const _layout = () => {
                         lastName: lastName,
                         birthday: birthday,
                         familyCode: familyCode,
-                        uid: uid,
                         phoneNumber: phoneNumber,
                         familyInterests: familyInterests,
                         relationships: relationships,
                         countryCode: countryCode,
+                        uid: uid,
                         userInitializationPressedNext:
                             userInitializationPressedNext,
 
@@ -206,11 +206,11 @@ const _layout = () => {
                         setLastName,
                         setBirthday,
                         setFamilyCode,
-                        setUid,
                         setPhoneNumber,
                         setFamilyInterests,
                         setRelationships: handleSetRelationships,
                         setCountryCode,
+                        setUid,
                         setUserInitializationPressedNext,
                     }}
                 >

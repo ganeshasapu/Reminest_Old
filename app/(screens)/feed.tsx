@@ -4,6 +4,7 @@ import {
     Text,
     View,
     ScrollView,
+    TouchableWithoutFeedback,
 } from "react-native";
 import { useContext, useEffect, useState } from "react";
 import { FirebaseContext } from "../auth";
@@ -28,12 +29,12 @@ const feed = () => {
     >([]);
     const [isLoading, setLoading] = useState(true);
 
-    const { user } = useContext(FirebaseContext);
+    const { user, logoutUser } = useContext(FirebaseContext);
 
-    const router = useRouter();
-    useEffect(() => {
-        router.push("/(screens)/home");
-    }, []);
+    // const router = useRouter();
+    // useEffect(() => {
+    //     router.push("/(screens)/home");
+    // }, []);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -106,20 +107,34 @@ const feed = () => {
                 style={{ flex: 1, backgroundColor: Colors.background }}
             >
                 <View style={styles.mainContainer}>
-                    <LogoName width={150} height={50} />
-                    <ScrollView contentContainerStyle={localStyles.scrollView} showsVerticalScrollIndicator={false} >
+                    <TouchableWithoutFeedback onPress={() => {
+                        logoutUser()
+                    }}>
+                        <LogoName width={150} height={50} />
+                    </TouchableWithoutFeedback>
+                    <ScrollView
+                        contentContainerStyle={localStyles.scrollView}
+                        showsVerticalScrollIndicator={false}
+                    >
                         {weeklyPostsCollections.reverse().map((post, index) => (
                             <PostCard
-                                userHasSubmitted={post.usersResponded.includes(user.uid)}
+                                userHasSubmitted={post.usersResponded.includes(
+                                    user.uid
+                                )}
                                 post={post}
-                                weeklyPostIndex={weeklyPostsCollections.length - index - 1}
+                                weeklyPostIndex={
+                                    weeklyPostsCollections.length - index - 1
+                                }
                                 familyData={familyData}
                                 key={index}
                             />
                         ))}
                         <FamilyCode code={userData.families[0]} />
                         <Text>You've reached the end!</Text>
-                        <Text style={{textAlign: "center"}}>Keep building your Reminest to collect more memories!</Text>
+                        <Text style={{ textAlign: "center" }}>
+                            Keep building your Reminest to collect more
+                            memories!
+                        </Text>
                     </ScrollView>
                 </View>
             </SafeAreaView>

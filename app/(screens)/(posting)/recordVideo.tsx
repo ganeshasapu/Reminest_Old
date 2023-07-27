@@ -46,6 +46,7 @@ const recordVideo = () => {
     const [permission, requestPermission] = Camera.useCameraPermissions();
 
 
+
     let lastPress = 0;
 
     const { user } = useContext(FirebaseContext);
@@ -63,6 +64,7 @@ const recordVideo = () => {
 
     useEffect(() => {
         requestPermission();
+         Camera.requestMicrophonePermissionsAsync();
     }, [])
 
     console.log("Test")

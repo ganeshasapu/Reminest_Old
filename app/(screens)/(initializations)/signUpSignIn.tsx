@@ -10,7 +10,7 @@ import {
     Alert,
     Dimensions,
 } from "react-native";
-import React, { MutableRefObject, useContext, useRef, useState } from "react";
+import React, { MutableRefObject, useContext, useEffect, useRef, useState } from "react";
 import { styles } from "../../stylesheets/styles";
 import BasicInput from "../../../components/BasicInput";
 import Colors from "../../../constants/Colors";
@@ -31,6 +31,7 @@ import {
     where,
 } from "firebase/firestore";
 import { collections, UserType } from "../../schema";
+import { FirebaseContext } from "../../auth";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 
@@ -73,9 +74,11 @@ const signUpSignIn = () => {
     const [pressedLogIn, setPressedLogIn] = useState(false);
     const router = useRouter();
 
+    const {checkLoginStatus} = useContext(FirebaseContext);
     const { setCurrentRouteIndex } = useContext(RouteContext);
     const { setCountryCode, countryCode, phoneNumber, setPhoneNumber } =
         useContext(UserFormContext);
+
 
     const handleLogIn = async () => {
         if (phoneNumber.length != 10) {

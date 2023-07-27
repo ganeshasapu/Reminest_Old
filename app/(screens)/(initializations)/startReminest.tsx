@@ -7,16 +7,18 @@ import {
     View,
     Image,
     Dimensions,
+    Alert,
 } from "react-native";
 import React, { useContext, useState } from 'react'
 import Colors from '../../../constants/Colors'
 import { styles } from '../../stylesheets/styles'
 import AppName from "../../../assets/vectors/AppName";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { FamilyFormContext, UserFormContext } from "./_layout";
 import { doc, collection, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { UserType, WeeklyPostsCollectionsType, collections } from "../../schema";
+import { FirebaseContext } from "../../auth";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 
@@ -28,10 +30,12 @@ const startReminest = () => {
 
     const { heritageOptions, activityOptions, milestoneOptions, familyName } = useContext(FamilyFormContext);
     const { firstName, lastName, birthday, phoneNumber, countryCode } = useContext(UserFormContext);
-    const { uid } = useContext(UserFormContext);
+    const {user} = useContext(FirebaseContext);
     const [pressDisabled, setPressDisabled] = useState(false);
 
     async function createFamily(familyCode: string, weekly_post_id: string) {
+        if (!user) return
+
         const selectedHeritageOptions = heritageOptions
             .filter((option) => option.selected)
             .map((option) => option.title);
@@ -55,8 +59,8 @@ const startReminest = () => {
                 familyName: familyName,
                 familyInterests: selectedTitles,
                 weekly_posts_collections: [weekly_post_id],
-                users: [uid],
-                creator: uid,
+                users: [user.uid],
+                creator: user.uid,
             };
 
             const familyRef = await doc(collection(db, "families"), familyCode);
@@ -68,6 +72,7 @@ const startReminest = () => {
     }
 
     async function createUser(familyCode: string) {
+        if (!user) return;
         const userData: UserType = {
             firstName: firstName,
             lastName: lastName,
@@ -78,21 +83,22 @@ const startReminest = () => {
             profilePicture: ""
         };
          try {
-             const userRef = doc(collection(db, collections.users), uid);
+             const userRef = doc(collection(db, collections.users), user.uid);
              await setDoc(userRef, userData);
-             console.log("Document written with ID:", uid);
+             console.log("Document written with ID:", user.uid);
          } catch (error) {
              console.error("Error adding document:", error);
          }
     }
 
-    async function createFirstPost() {
+    async function createFirstPost(familyCode: string) {
         const weekly_post_collection_data: WeeklyPostsCollectionsType = {
             posts: [],
             comments: [],
             highlightedWord: "look up to",
             usersResponded: [],
             prompt: "Who did you look up to growing up?",
+            family: doc(db, collections.families, familyCode)
         };
 
         try{
@@ -114,7 +120,7 @@ const startReminest = () => {
     async function handlePress() {
         setPressDisabled(true)
         const familyCode = generateRandomNumber().toString();
-        const weekly_post_id = await createFirstPost();
+        const weekly_post_id = await createFirstPost(familyCode);
         if (weekly_post_id === undefined) {
             console.log("Error creating first post");
             return;
@@ -122,6 +128,11 @@ const startReminest = () => {
         await createFamily(familyCode, weekly_post_id);
         await createUser(familyCode);
         router.push("(screens)/feed");
+    }
+
+    if (!user){
+        Alert.alert("Error", "User not found");
+        return <Redirect href={"(screens)/(initializations)/signUpSignIn"} />
     }
   return (
       <TouchableWithoutFeedback onPress={handlePress} accessible={false} disabled={pressDisabled}>

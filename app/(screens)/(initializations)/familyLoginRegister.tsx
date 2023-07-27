@@ -5,10 +5,11 @@ import { styles } from '../../stylesheets/styles'
 import { UserFormContext } from "./_layout";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
 import Icon from "@expo/vector-icons/FontAwesome";
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { UserType, collections } from '../../schema';
+import { FirebaseContext } from '../../auth';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -16,7 +17,7 @@ const h = Dimensions.get("window").height;
 const CELL_COUNT = 5;
 
 const familiyLoginRegister = () => {
-    const {firstName, lastName, uid, birthday, phoneNumber, countryCode} = useContext(UserFormContext)
+    const {firstName, lastName, birthday, phoneNumber, countryCode} = useContext(UserFormContext)
     const [familyCode, setFamilyCode] = useState<string>("");
     const ref = useBlurOnFulfill({ value: familyCode, cellCount: CELL_COUNT });
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -24,6 +25,7 @@ const familiyLoginRegister = () => {
         setValue: setFamilyCode,
     });
 
+    const {user} = useContext(FirebaseContext)
     const router = useRouter();
 
 
@@ -42,15 +44,17 @@ const familiyLoginRegister = () => {
             profilePicture: "",
         };
         try {
-            const userRef = doc(db, collections.users, uid);
+            if (!user) return;
+            const userRef = doc(db, collections.users, user.uid);
             await setDoc(userRef, userData);
-            console.log("Document written with ID:", uid);
+            console.log("Document written with ID:", user.uid);
         } catch (error) {
             console.error("Error adding document:", error);
         }
     }
 
     async function joinFamily(familyCode: string) {
+        if (!user) return;
         const familyRef = doc(db, collections.families, familyCode);
         const familySnapshot = await getDoc(familyRef);
         if (familySnapshot.data() === undefined || !familySnapshot.exists()) {
@@ -58,7 +62,7 @@ const familiyLoginRegister = () => {
             return
         }
         const existingUsers = familySnapshot.data().users;
-        const updatedUsers = [...existingUsers, uid];
+        const updatedUsers = [...existingUsers, user.uid];
 
         return setDoc(familyRef, {users: updatedUsers}, {merge: true})
 
@@ -78,6 +82,11 @@ const familiyLoginRegister = () => {
             }
         }
     }, [familyCode]);
+
+    if (!user) {
+        Alert.alert("Error", "User not found");
+        return <Redirect href={"(screens)/(initializations)/signUpSignIn"} />;
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

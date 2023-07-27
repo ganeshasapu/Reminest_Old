@@ -31,6 +31,7 @@ export interface WeeklyPostsCollectionsType {
     usersResponded: string[];
     comments: string[];
     highlightedWord: string;
+    family: DocumentReference;
 }
 
 export interface mediaType {

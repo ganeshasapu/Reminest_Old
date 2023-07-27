@@ -17,7 +17,7 @@ const CELL_COUNT = 6;
 
 const smsconfirmation = () => {
     const { login } = useLocalSearchParams();
-    const { phoneNumber, countryCode, setUid } = useContext(UserFormContext);
+    const { phoneNumber, countryCode } = useContext(UserFormContext);
     const [code, setCode] = useState<string>("");
     const { registerUser, sendVerification } = useContext(FirebaseContext);
     const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(
@@ -28,7 +28,6 @@ const smsconfirmation = () => {
     const register = () => {
         registerUser(code)
             .then((result: any) => {
-                setUid(result.user.uid)
                 if (login) {
                     router.push("(screens)/feed")
                 }
@@ -65,7 +64,7 @@ const smsconfirmation = () => {
               <FirebaseRecaptchaVerifierModal
                   ref={recaptchaVerifier}
                   firebaseConfig={firebaseConfig}
-                  attemptInvisibleVerification={true}
+                //   attemptInvisibleVerification={true}
               />
               <View style={styles.mainContainer}>
                   <LogoDark width={40} height={40} />
