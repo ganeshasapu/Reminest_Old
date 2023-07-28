@@ -7,8 +7,9 @@ import {
     View,
     Image,
     TouchableOpacity,
+    Alert,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { styles } from "../../stylesheets/styles";
 import Colors from "../../../constants/Colors";
 import * as ImagePicker from "expo-image-picker";
@@ -16,6 +17,7 @@ import { useRouter } from "expo-router";
 import { FirebaseContext } from "../../auth";
 import { PostContext, RouteContext } from "./_layout";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Loading from "../loading";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -23,22 +25,33 @@ const h = Dimensions.get("window").height;
 const addMedia = () => {
     const { user } = useContext(FirebaseContext);
     const { imageUri, setImageUri } = useContext(PostContext);
+    const [mediaPermission, setMediaPermission] = useState<null | ImagePicker.MediaLibraryPermissionResponse>(null);
 
     const router = useRouter();
 
     const { currentRouteIndex, setCurrentRouteIndex } =
         useContext(RouteContext);
 
-    if (!user) return <Text>No User Found</Text>;
+     async function getMediaPermission() {
+        if (mediaPermission) return;
 
-    const selectImage = async () => {
-        const { status } =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-            console.log("Permission not granted!");
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert("You've refused to allow this app to access your photos!");
             return;
         }
 
+        setMediaPermission(permissionResult);
+     }
+
+    useEffect(() => {
+        getMediaPermission();
+    }, [])
+
+    if (!user) return <Text>No User Found</Text>;
+
+    const selectImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
@@ -53,9 +66,26 @@ const addMedia = () => {
     };
 
     const skipImage = () => {
-        console.log("Test")
         router.push("/(screens)/(posting)/confirmPost");
         setCurrentRouteIndex(currentRouteIndex + 1);
+    }
+
+    if (mediaPermission === null ){
+        return <Loading />
+    }
+
+    if (!mediaPermission.granted){
+        return (
+            <SafeAreaView
+                style={{ flex: 1, backgroundColor: Colors.background, justifyContent: "center", alignItems: "center" }}
+            >
+                <Text>Permission not granted</Text>
+                <Button
+                    title="Request Permission"
+                    onPress={getMediaPermission}
+                />
+            </SafeAreaView>
+        );
     }
 
     return (
@@ -85,6 +115,7 @@ const addMedia = () => {
                                 name="image-plus"
                                 size={50}
                                 color="white"
+                                style={{zIndex: 10}}
                             />
                         </TouchableOpacity>
                         <Text style={localStyles.addImageText}>

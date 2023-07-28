@@ -4,7 +4,7 @@ export default {
     expo: {
         name: "Reminest",
         slug: "Reminest",
-        owner: "reminesttesting",
+        owner: "reminestinternaltesting",
         version: "1.0.0",
         orientation: "portrait",
         icon: "./assets/images/icon.png",
@@ -13,7 +13,7 @@ export default {
         splash: {
             image: "./assets/images/splash.png",
             resizeMode: "contain",
-            backgroundColor: "#302929",
+            backgroundColor: "#FBF5EE",
         },
         assetBundlePatterns: ["**/*"],
         extra: {
@@ -43,7 +43,7 @@ export default {
         android: {
             adaptiveIcon: {
                 foregroundImage: "./assets/images/adaptive-icon.png",
-                backgroundColor: "#ffffff",
+                backgroundColor: "#FBF5EE",
             },
             permissions: [
                 "CAMERA",

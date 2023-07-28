@@ -17,7 +17,7 @@ const h = Dimensions.get("window").height;
 const CELL_COUNT = 5;
 
 const familiyLoginRegister = () => {
-    const {firstName, lastName, birthday, phoneNumber, countryCode} = useContext(UserFormContext)
+    const { firstName, lastName, birthday, phoneNumber, countryCode} = useContext(UserFormContext)
     const [familyCode, setFamilyCode] = useState<string>("");
     const ref = useBlurOnFulfill({ value: familyCode, cellCount: CELL_COUNT });
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
@@ -74,8 +74,7 @@ const familiyLoginRegister = () => {
             try {
                 const success = joinFamily(familyCode);
                 if (!success) return;
-                createUser(familyCode);
-                router.push("(screens)/feed");
+                createUser(familyCode).then(() => {router.push("(screens)/feed")})
             }
             catch(err){
                 console.log(err)
@@ -94,74 +93,79 @@ const familiyLoginRegister = () => {
                 style={{ flex: 1, backgroundColor: Colors.background }}
             >
                 <View style={styles.mainContainer}>
-                    <View style={localStyles.emptySpacing} />
-                    <View style={localStyles.textContainer}>
-                        <Text style={localStyles.welcomeText}>Welcome</Text>
-                        <Text style={localStyles.nameText}>
-                            {firstName + " " + lastName}
-                        </Text>
-                    </View>
-                    <Text
-                        style={[
-                            localStyles.labelText,
-                            { marginTop: 30, marginBottom: 10 },
-                        ]}
-                    >
-                        Have A Family Code?
-                    </Text>
-                    <CodeField
-                        {...props}
-                        ref={ref}
-                        value={familyCode}
-                        onChangeText={setFamilyCode}
-                        cellCount={CELL_COUNT}
-                        keyboardType="number-pad"
-                        textContentType="oneTimeCode"
-                        renderCell={({ index, symbol, isFocused }) => (
-                            <View
-                                style={[
-                                    localStyles.cellContainer,
-                                    styles.shadow,
-                                    { shadowRadius: 5, shadowOpacity: 0.15 },
-                                ]}
-                            >
-                                <Text
-                                    key={index}
-                                    style={[
-                                        localStyles.cell,
-                                        isFocused && localStyles.focusCell,
-                                    ]}
-                                    onLayout={getCellOnLayoutHandler(index)}
-                                >
-                                    {symbol || (isFocused ? <Cursor /> : null)}
-                                </Text>
-                            </View>
-                        )}
-                    />
-                    <Text
-                        style={[
-                            localStyles.labelText,
-                            { marginTop: 30, marginBottom: 10 },
-                        ]}
-                    >
-                        Don't Have One?
-                    </Text>
-                    <TouchableOpacity
-                        style={localStyles.familyCodeButton}
-                        onPress={createFamily}
-                    >
-                        <View style={localStyles.innerButtonContainer}>
-                            <Text
-                                style={[
-                                    styles.text,
-                                    { marginRight: 10, color: "#fff" },
-                                ]}
-                            >
-                                Create New Family
+                    <View style={{flex: 1, justifyContent: "center"}}>
+                        <View style={localStyles.textContainer}>
+                            <Text style={localStyles.welcomeText}>Welcome</Text>
+                            <Text style={localStyles.nameText}>
+                                {firstName + " " + lastName}
                             </Text>
-                            <Icon name="send" size={20} color="#fff" />
                         </View>
-                    </TouchableOpacity>
+                        <Text
+                            style={[
+                                localStyles.labelText,
+                                { marginTop: 30, marginBottom: 10 },
+                            ]}
+                        >
+                            Have A Family Code?
+                        </Text>
+                        <CodeField
+                            {...props}
+                            ref={ref}
+                            value={familyCode}
+                            onChangeText={setFamilyCode}
+                            cellCount={CELL_COUNT}
+                            keyboardType="number-pad"
+                            textContentType="oneTimeCode"
+                            renderCell={({ index, symbol, isFocused }) => (
+                                <View
+                                    style={[
+                                        localStyles.cellContainer,
+                                        styles.shadow,
+                                        {
+                                            shadowRadius: 5,
+                                            shadowOpacity: 0.15,
+                                        },
+                                    ]}
+                                >
+                                    <Text
+                                        key={index}
+                                        style={[
+                                            localStyles.cell,
+                                            isFocused && localStyles.focusCell,
+                                        ]}
+                                        onLayout={getCellOnLayoutHandler(index)}
+                                    >
+                                        {symbol ||
+                                            (isFocused ? <Cursor /> : null)}
+                                    </Text>
+                                </View>
+                            )}
+                        />
+                        <Text
+                            style={[
+                                localStyles.labelText,
+                                { marginTop: 30, marginBottom: 10 },
+                            ]}
+                        >
+                            Don't Have One?
+                        </Text>
+                        <TouchableOpacity
+                            style={localStyles.familyCodeButton}
+                            onPress={createFamily}
+                        >
+                            <View style={localStyles.innerButtonContainer}>
+                                <Text
+                                    style={[
+                                        styles.text,
+                                        { marginRight: 10, color: "#fff" },
+                                    ]}
+                                >
+                                    Create New Family
+                                </Text>
+                                <Icon name="send" size={20} color="#fff" />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </SafeAreaView>
         </TouchableWithoutFeedback>

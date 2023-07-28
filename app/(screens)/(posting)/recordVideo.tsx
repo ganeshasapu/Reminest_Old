@@ -67,8 +67,6 @@ const recordVideo = () => {
          Camera.requestMicrophonePermissionsAsync();
     }, [])
 
-    console.log("Test")
-
     useEffect(() => {
         if (!collectionID) return console.log("No collection ID");
         const fetchWeeklyPostCollection = async () => {
@@ -156,6 +154,11 @@ const recordVideo = () => {
 
     const stopRecording = async () => {
         cameraRef.current?.stopRecording();
+        setVideoUri(
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        );
+        setIsRecording(false);
+        setCurrentRouteIndex(1);
     };
 
     const recordVideo = async () => {
@@ -233,7 +236,12 @@ const recordVideo = () => {
     if (!permission.granted) {
         return (
             <SafeAreaView
-                style={{ flex: 1, backgroundColor: Colors.background }}
+                style={{
+                    flex: 1,
+                    backgroundColor: Colors.background,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
             >
                 <Text>Permission not granted</Text>
                 <Button

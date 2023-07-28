@@ -23,7 +23,7 @@ const PostingFlowNav = () => {
     }, [pathName]);
 
     const previous = () => {
-        console.log(currentRouteIndex)
+        console.log("test")
         if (currentRouteIndex == 1) {
             Alert.alert("Attention!", "If you go back you will lose the current recording", [
                 {
@@ -38,7 +38,12 @@ const PostingFlowNav = () => {
                 }},
             ]);
         }
+        else if (currentRouteIndex == 2){
+             setCurrentRouteIndex(currentRouteIndex - 1);
+             router.push(baseRoute + routes[currentRouteIndex - 2]);
+        }
         else if (currentRouteIndex == 3) {
+
              Alert.alert(
                  "Attention!",
                  "If you go back you will lose the current Image",
@@ -61,11 +66,17 @@ const PostingFlowNav = () => {
                  ]
              );
         }
+        else if (currentRouteIndex == 4){
+            setCurrentRouteIndex(currentRouteIndex - 1);
+            router.push(baseRoute + routes[currentRouteIndex - 2]);
+        }
         else if (currentRouteIndex > 0) {
             setCurrentRouteIndex(currentRouteIndex - 1);
             router.push(baseRoute + routes[currentRouteIndex - 1]);
         }
     };
+
+
 
 
     const next = () => {
@@ -78,6 +89,9 @@ const PostingFlowNav = () => {
     if (currentRouteIndex == 0) {
         return <View />;
     }
+
+
+    console.log(currentRouteIndex)
 
 
     return (

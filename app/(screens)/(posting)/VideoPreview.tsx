@@ -14,7 +14,7 @@ const VideoPreview = () => {
 
     const videoRef = useRef<Video>(null);
 
-    const {videoUri, setThumbnailUri} = useContext(PostContext)
+    const { setThumbnailUri, videoUri} = useContext(PostContext)
 
     useEffect(() => {
        const generateThumbnail = async () => {
@@ -56,8 +56,7 @@ export default VideoPreview;
 const localStyles = StyleSheet.create({
     videoPreviewBox: {
         borderRadius: 20,
-        width: w * 0.9,
-        height: w * 0.9 * (16 / 9),
+        flex: 1,
         overflow: "hidden",
     },
     videoPreview: {

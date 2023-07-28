@@ -127,7 +127,7 @@ const confirmPost = () => {
 
         if (!videoDownloadUrl) return;
 
-        const media = [{ type: "VIDEO", url: videoDownloadUrl }, photoDownloadUrl ? { type: "PHOTO", url: photoDownloadUrl } : null];
+        const media = [{ type: "VIDEO", url: videoDownloadUrl }, photoDownloadUrl ? { type: "IMAGE", url: photoDownloadUrl } : null];
 
         const postData = {
             like_count: 0,
@@ -266,6 +266,7 @@ const localStyles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        marginBottom: 10
     },
     promptText: {
         flexShrink: 1,

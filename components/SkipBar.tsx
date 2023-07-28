@@ -13,7 +13,7 @@ const SkipBar = () => {
                 <TouchableOpacity
                     onPress={() => {
                         router.push(
-                            "(screens)/(initializations)/initialization1"
+                            "(screens)/(initializations)/signUpSignIn"
                         );
                     }}
                 >

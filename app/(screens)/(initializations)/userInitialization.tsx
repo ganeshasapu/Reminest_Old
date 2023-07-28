@@ -119,158 +119,162 @@ const userInitialization = () => {
                         Build Your Profile
                     </Text>
 
-                    <View style={localStyles.emptySpacing} />
-                    <Text style={[localStyles.labelText]}>
-                        What's Your Name?
-                    </Text>
-                    <View
-                        style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            width: "100%",
-                            gap: 10,
-                        }}
-                    >
-                        <BasicInput
-                            autoCapitalize="words"
-                            changeTextHandler={setFirstName}
-                            value={firstName}
+                    <View style={{flex: 1, justifyContent: "center"}}>
+                        <Text style={[localStyles.labelText]}>
+                            What's Your Name?
+                        </Text>
+                        <View
                             style={{
-                                marginTop: 5,
-                                borderColor:
-                                    userInitializationPressedNext &&
-                                    firstName == ""
-                                        ? "red"
-                                        : Colors.blue,
-                                flex: 1,
+                                display: "flex",
+                                flexDirection: "row",
+                                width: "100%",
+                                gap: 10,
                             }}
-                            placeholder="First Name"
-                        ></BasicInput>
-                        <BasicInput
-                            autoCapitalize="words"
-                            changeTextHandler={setLastName}
-                            value={lastName}
-                            style={{
-                                marginTop: 5,
-                                borderColor:
-                                    userInitializationPressedNext &&
-                                    lastName == ""
-                                        ? "red"
-                                        : Colors.blue,
-                                flex: 1,
-                            }}
-                            placeholder="Last Name"
-                        ></BasicInput>
-                    </View>
-                    <Text
-                        style={[
-                            { marginTop: 20, marginBottom: 10 },
-                            localStyles.labelText,
-                        ]}
-                    >
-                        What's Your Phone Number?
-                    </Text>
-
-                    <View style={localStyles.phoneNumberContainer}>
-                        <TouchableOpacity
-                            style={localStyles.countryCodeContainer}
-                            onPress={() => setShow(true)}
                         >
-                            <Text style={{ fontSize: 20, lineHeight: 35 }}>
-                                {flag}
-                            </Text>
-                            <Text style={{ lineHeight: 35, marginRight: 5 }}>
-                                {countryCode}
-                            </Text>
-                            <View
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignContent: "center",
-                                }}
-                            >
-                                <AntDesign
-                                    name="caretdown"
-                                    size={10}
-                                    color={Colors.blue}
-                                    style={{}}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                        <View style={{ flex: 1 }}>
                             <BasicInput
-                                keyboardType="phone-pad"
-                                changeTextHandler={setPhoneNumber}
-                                value={phoneNumber}
+                                autoCapitalize="words"
+                                changeTextHandler={setFirstName}
+                                value={firstName}
                                 style={{
+                                    marginTop: 5,
                                     borderColor:
                                         userInitializationPressedNext &&
-                                        phoneNumber.length != 10
+                                        firstName == ""
                                             ? "red"
                                             : Colors.blue,
+                                    flex: 1,
                                 }}
-                                placeholder="Phone Number"
-                                maxLength={10}
+                                placeholder="First Name"
+                            ></BasicInput>
+                            <BasicInput
+                                autoCapitalize="words"
+                                changeTextHandler={setLastName}
+                                value={lastName}
+                                style={{
+                                    marginTop: 5,
+                                    borderColor:
+                                        userInitializationPressedNext &&
+                                        lastName == ""
+                                            ? "red"
+                                            : Colors.blue,
+                                    flex: 1,
+                                }}
+                                placeholder="Last Name"
                             ></BasicInput>
                         </View>
-                    </View>
-                    <Text
-                        style={[
-                            { marginTop: 20, marginBottom: 10 },
-                            localStyles.labelText,
-                        ]}
-                    >
-                        What Is Your Birthday?
-                    </Text>
-                    <TouchableOpacity
-                        style={localStyles.birthdayInput}
-                        onPress={() => setDatePickerVisibility(true)}
-                    >
-                        {birthday ? (
-                            <Text style={localStyles.birthdayText}>
-                                {birthday.getMonth() + 1}/{birthday.getDate()}/
-                                {birthday.getFullYear()}
-                            </Text>
-                        ) : null}
-                    </TouchableOpacity>
-                    <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
-                        mode="date"
-                        onConfirm={handleConfirm}
-                        onCancel={() => setDatePickerVisibility(false)}
-                    />
+                        <Text
+                            style={[
+                                { marginTop: 20, marginBottom: 10 },
+                                localStyles.labelText,
+                            ]}
+                        >
+                            What's Your Phone Number?
+                        </Text>
 
-                    <Text
-                        style={[
-                            localStyles.labelText,
-                            { marginTop: 20, marginBottom: 10 },
-                        ]}
-                    >
-                        Select All That Apply:
-                    </Text>
-
-                    <View style={localStyles.optionsContainer}>
-                        {relationships.map((option) => (
+                        <View style={localStyles.phoneNumberContainer}>
                             <TouchableOpacity
-                                style={[
-                                    localStyles.familyCodeButton,
-                                    {
-                                        backgroundColor: option.selected
-                                            ? Colors.blue
-                                            : "#442626",
-                                        opacity: option.selected ? 1 : 0.5,
-                                    },
-                                ]}
-                                key={option.title}
-                                onPress={() => {
-                                    setRelationships(option.title);
-                                }}
+                                style={localStyles.countryCodeContainer}
+                                onPress={() => setShow(true)}
                             >
-                                <Text style={localStyles.familyOptionText}>
-                                    {option.title}
+                                <Text style={{ fontSize: 20, lineHeight: 35 }}>
+                                    {flag}
                                 </Text>
+                                <Text
+                                    style={{ lineHeight: 35, marginRight: 5 }}
+                                >
+                                    {countryCode}
+                                </Text>
+                                <View
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignContent: "center",
+                                    }}
+                                >
+                                    <AntDesign
+                                        name="caretdown"
+                                        size={10}
+                                        color={Colors.blue}
+                                        style={{}}
+                                    />
+                                </View>
                             </TouchableOpacity>
-                        ))}
+                            <View style={{ flex: 1 }}>
+                                <BasicInput
+                                    keyboardType="phone-pad"
+                                    changeTextHandler={setPhoneNumber}
+                                    value={phoneNumber}
+                                    style={{
+                                        borderColor:
+                                            userInitializationPressedNext &&
+                                            phoneNumber.length != 10
+                                                ? "red"
+                                                : Colors.blue,
+                                    }}
+                                    placeholder="Phone Number"
+                                    maxLength={10}
+                                ></BasicInput>
+                            </View>
+                        </View>
+                        <Text
+                            style={[
+                                { marginTop: 20, marginBottom: 10 },
+                                localStyles.labelText,
+                            ]}
+                        >
+                            What Is Your Birthday?
+                        </Text>
+                        <TouchableOpacity
+                            style={localStyles.birthdayInput}
+                            onPress={() => setDatePickerVisibility(true)}
+                        >
+                            {birthday ? (
+                                <Text style={localStyles.birthdayText}>
+                                    {birthday.getMonth() + 1}/
+                                    {birthday.getDate()}/
+                                    {birthday.getFullYear()}
+                                </Text>
+                            ) : null}
+                        </TouchableOpacity>
+                        <DateTimePickerModal
+                            isVisible={isDatePickerVisible}
+                            mode="date"
+                            onConfirm={handleConfirm}
+                            onCancel={() => setDatePickerVisibility(false)}
+                        />
+
+                        <Text
+                            style={[
+                                localStyles.labelText,
+                                { marginTop: 20, marginBottom: 10 },
+                            ]}
+                        >
+                            Select All That Apply:
+                        </Text>
+
+                        <View style={localStyles.optionsContainer}>
+                            {relationships.map((option) => (
+                                <TouchableOpacity
+                                    style={[
+                                        localStyles.familyCodeButton,
+                                        {
+                                            backgroundColor: option.selected
+                                                ? Colors.blue
+                                                : "#442626",
+                                            opacity: option.selected ? 1 : 0.5,
+                                        },
+                                    ]}
+                                    key={option.title}
+                                    onPress={() => {
+                                        setRelationships(option.title);
+                                    }}
+                                >
+                                    <Text style={localStyles.familyOptionText}>
+                                        {option.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
                 </View>
             </SafeAreaView>
@@ -290,41 +294,10 @@ const localStyles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    emptySpacing: {
-        height: "15%",
-    },
-    uploadButtonText: {
-        color: "#fff",
-        fontSize: 14,
-        textAlign: "center",
-        fontFamily: "open-sans",
-    },
     uploadButtonContainer: {
         position: "absolute",
         left: "8.5%",
         top: "11%",
-    },
-    navigationButton: {
-        backgroundColor: Colors.blue,
-        padding: 10,
-        borderRadius: 25,
-        width: 50,
-        height: 50,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    buttonText: {
-        color: "#fff",
-        fontSize: 10,
-        textAlign: "center",
-    },
-    buttonGroup: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "50%",
-        marginTop: 20,
     },
     input: {
         width: "80%",
