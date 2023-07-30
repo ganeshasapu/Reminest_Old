@@ -2,7 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, Slot, Navigator } from "expo-router";
 import { useEffect } from "react";
-import { FirebaseProvider } from "./auth";
+import { FirebaseProvider } from "./authProvider";
 import Loading from "./(screens)/loading";
 
 export {

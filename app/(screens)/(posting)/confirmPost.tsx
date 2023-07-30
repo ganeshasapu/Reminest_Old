@@ -25,13 +25,14 @@ import {
     uploadBytesResumable,
 } from "firebase/storage";
 import { storage, db } from "../../firebase";
-import { mediaType, collections } from "../../schema";
-import { FirebaseContext } from "../../auth";
+import { mediaType, collections } from "../../../schema";
+import { FirebaseContext } from "../../authProvider";
 import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
 import { PostContext } from "./_layout";
 import Loading from "../loading";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import ArrowNavigation from "../../../components/ArrowNavigation";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -50,8 +51,8 @@ const confirmPost = () => {
 
     // const videoUri = "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4";
     // const thumbnailUri = "https://picsum.photos/seed/696/3000/2000";
-    // // const imageUri = "https://picsum.photos/seed/696/3000/2000";
-    // const imageUri = ""
+    // const imageUri = "https://picsum.photos/seed/696/3000/2000";
+    // // const imageUri = ""
     // const prompt = "What is your favorite color?";
     // const collectionID = 1;
 
@@ -217,6 +218,7 @@ const confirmPost = () => {
                     ) : null}
                 </View>
             </View>
+            <ArrowNavigation left={{route: "(screens)/(posting)/addMedia"}} />
         </SafeAreaView>
     );
 };

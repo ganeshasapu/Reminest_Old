@@ -7,12 +7,12 @@ import {
     TouchableWithoutFeedback,
 } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { FirebaseContext } from "../auth";
+import { FirebaseContext } from "../authProvider";
 import { doc } from "firebase/firestore";
 import { getDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { UserType, FamilyType, WeeklyPostsCollectionsType } from "../schema";
-import { collections } from "../schema";
+import { UserType, FamilyType, WeeklyPostsCollectionsType } from "../../schema";
+import { collections } from "../../schema";
 import LogoName from "../../assets/vectors/LogoName";
 import { styles } from "../stylesheets/styles";
 import Colors from "../../constants/Colors";

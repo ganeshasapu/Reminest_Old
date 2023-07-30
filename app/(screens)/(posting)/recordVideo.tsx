@@ -21,9 +21,9 @@ import {
     PostType,
     UserType,
     collections,
-} from "../../schema";
+} from "../../../schema";
 import { Camera, CameraType, VideoQuality } from "expo-camera";
-import { FirebaseContext } from "../../auth";
+import { FirebaseContext } from "../../authProvider";
 import { PostContext, RouteContext } from "./_layout";
 import VideoPreview from "./VideoPreview";
 import Loading from "../loading";
@@ -257,6 +257,7 @@ const recordVideo = () => {
     if (!collectionID) return <Text>No post collection</Text>;
 
     if (videoUri) {
+        console.log("video preview")
         return (
             <VideoPreview />
         );

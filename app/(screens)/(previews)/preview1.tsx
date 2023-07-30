@@ -1,7 +1,11 @@
-import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, Dimensions, Image } from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
 import PreviewLoading1 from "../../../assets/vectors/PreviewLoading1";
+import ArrowNavigation from "../../../components/ArrowNavigation";
+
+const h = Dimensions.get("window").height;
+const w = Dimensions.get("window").width;
 
 const preview1 = () => {
     return (
@@ -10,34 +14,27 @@ const preview1 = () => {
                 styles.mainContainer,
                 {
                     display: "flex",
-                    justifyContent: "center",
                     alignItems: "center",
                 },
             ]}
         >
-            <ImageBackground
-                source={require("../../../assets/images/stock_image7.png")}
-                style={[
-                    localStyles.image,
-                    localStyles.shadow,
-                    { top: "5%", left: "30%" },
-                ]}
-            />
-            <ImageBackground
-                source={require("../../../assets/images/stock_image8.png")}
-                style={[
-                    localStyles.image,
-                    localStyles.shadow,
-                    { top: "22%", left: "5%" },
-                ]}
-            />
-            <View style={localStyles.emptySpacing} />
+            <View style={localStyles.imageContainer}>
+                <Image
+                    source={require("../../../assets/images/preview1.png")}
+                    style={[localStyles.image]}
+                />
+            </View>
             <View style={localStyles.textContainer}>
-                <Text style={[styles.bigtext, localStyles.centerText]}>
+                <Text style={[styles.bigtext, {textAlign: "center"}]}>
                     Respond to weekly prompts about your family
                 </Text>
             </View>
             <PreviewLoading1 width={30} height={20} />
+            <ArrowNavigation
+                right={{
+                    route: "(screens)/(previews)/preview2",
+                }}
+            />
         </SafeAreaView>
     );
 };
@@ -45,23 +42,6 @@ const preview1 = () => {
 export default preview1;
 
 const localStyles = StyleSheet.create({
-    centerText: {
-        textAlign: "center",
-    },
-    shadow: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 10,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-    },
-    image: {
-        width: "80%",
-        height: "80%",
-        position: "absolute",
-    },
     textContainer: {
         display: "flex",
         justifyContent: "center",
@@ -69,7 +49,19 @@ const localStyles = StyleSheet.create({
         width: "90%",
         paddingBottom: 10,
     },
-    emptySpacing: {
+    imageContainer: {
+        zIndex: -1,
+        marginBottom: 15,
+        height: h * 0.7,
+        width: w,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    image: {
+        flex: 1,
+        width: "100%",
         height: "100%",
-    }
+        resizeMode: "contain",
+    },
 });

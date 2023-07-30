@@ -1,6 +1,5 @@
 import { Navigator, Slot } from "expo-router";
 import { createContext, useState } from "react";
-import InitializationFlowNav from "./initializationFlowNav";
 
 interface FamilyRelation {
     title: string;
@@ -22,7 +21,6 @@ interface UserFormContextProps {
     relationships: FamilyRelation[];
     countryCode: string;
     uid: string;
-    userInitializationPressedNext: boolean;
 
     setFirstName: (firstName: string) => void;
     setLastName: (lastName: string) => void;
@@ -33,7 +31,6 @@ interface UserFormContextProps {
     setRelationships: (relationship: string) => void;
     setCountryCode: (countryCode: string) => void;
     setUid: (uid: string) => void;
-    setUserInitializationPressedNext: (userInitializationPressedNext: boolean) => void;
 }
 
 interface FamilyFormContextProps {
@@ -45,7 +42,6 @@ interface FamilyFormContextProps {
 
 
     setFamilyName: (familyName: string) => void;
-    setFamilyNamePressedNext: (familyNamePressedNext: boolean) => void;
     setHeritageOptions: (historyOption: string) => void;
     setActivityOptions: (activityOption: string) => void;
     setMilestoneOptions: (milestoneOption: string) => void;
@@ -125,7 +121,6 @@ const _layout = () => {
     const [familyName, setFamilyName] = useState("");
 
 
-    const [userInitializationPressedNext, setUserInitializationPressedNext] = useState(false);
     const [familyNamePressedNext, setFamilyNamePressedNext] = useState(false);
 
 
@@ -182,7 +177,6 @@ const _layout = () => {
                     milestoneOptions: milestoneOptions,
 
                     setFamilyName: setFamilyName,
-                    setFamilyNamePressedNext: setFamilyNamePressedNext,
                     setHeritageOptions: handleSetHeritageOptions,
                     setActivityOptions: handleSetActivityOptions,
                     setMilestoneOptions: handleSetMilestoneOptions,
@@ -199,8 +193,6 @@ const _layout = () => {
                         relationships: relationships,
                         countryCode: countryCode,
                         uid: uid,
-                        userInitializationPressedNext:
-                            userInitializationPressedNext,
 
                         setFirstName,
                         setLastName,
@@ -211,12 +203,10 @@ const _layout = () => {
                         setRelationships: handleSetRelationships,
                         setCountryCode,
                         setUid,
-                        setUserInitializationPressedNext,
                     }}
                 >
                     <Navigator>
                         <Slot />
-                        <InitializationFlowNav />
                     </Navigator>
                 </UserFormContext.Provider>
             </FamilyFormContext.Provider>

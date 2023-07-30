@@ -14,10 +14,11 @@ import { styles } from "../../stylesheets/styles";
 import Colors from "../../../constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { FirebaseContext } from "../../auth";
+import { FirebaseContext } from "../../authProvider";
 import { PostContext, RouteContext } from "./_layout";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Loading from "../loading";
+import ArrowNavigation from "../../../components/ArrowNavigation";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -70,6 +71,32 @@ const addMedia = () => {
         setCurrentRouteIndex(currentRouteIndex + 1);
     }
 
+    async function goingBack(){
+        if (!imageUri) return true;
+        await Alert.alert(
+            "Attention!",
+            "If you go back you will lose the current image",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => {
+                        return false;
+                    },
+                    style: "cancel",
+                },
+                {
+                    text: "OK",
+                    onPress: () => {
+                        router.push("/(screens)/(posting)/recordVideo");
+                        setImageUri("");
+                        return true;
+                    },
+                },
+            ]
+        );
+        return false;
+    }
+
     if (mediaPermission === null ){
         return <Loading />
     }
@@ -103,7 +130,12 @@ const addMedia = () => {
                 {imageUri ? (
                     <Image
                         source={{ uri: imageUri }}
-                        style={{ width: w * 0.9, height: w * 0.9, borderWidth: 1, borderColor: "black" }}
+                        style={{
+                            width: w * 0.9,
+                            height: w * 0.9,
+                            borderWidth: 1,
+                            borderColor: "black",
+                        }}
                     />
                 ) : (
                     <View>
@@ -115,13 +147,16 @@ const addMedia = () => {
                                 name="image-plus"
                                 size={50}
                                 color="white"
-                                style={{zIndex: 10}}
+                                style={{ zIndex: 10 }}
                             />
                         </TouchableOpacity>
                         <Text style={localStyles.addImageText}>
                             Click to add a photo
                         </Text>
-                        <TouchableOpacity style={localStyles.skipButton} onPress={skipImage}>
+                        <TouchableOpacity
+                            style={localStyles.skipButton}
+                            onPress={skipImage}
+                        >
                             <Text style={localStyles.skipButtonText}>
                                 No Thanks
                             </Text>
@@ -129,6 +164,16 @@ const addMedia = () => {
                     </View>
                 )}
             </View>
+            <ArrowNavigation
+                left={{
+                    route: "(screens)/(posting)/recordVideo",
+                    callback: goingBack,
+                }}
+                right={{
+                    visible: imageUri ? true : false,
+                    route: "(screens)/(posting)/confirmPost",
+                }}
+            />
         </SafeAreaView>
     );
 };

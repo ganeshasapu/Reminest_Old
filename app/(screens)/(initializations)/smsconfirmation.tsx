@@ -7,8 +7,9 @@ import { UserFormContext } from "./_layout";
 import BasicInput from '../../../components/BasicInput';
 import { FirebaseRecaptchaVerifierModal,   } from 'expo-firebase-recaptcha';
 import { firebaseConfig } from '../../firebase';
-import { FirebaseContext } from '../../auth';
+import { FirebaseContext } from '../../authProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import ArrowNavigation from '../../../components/ArrowNavigation';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -64,7 +65,7 @@ const smsconfirmation = () => {
               <FirebaseRecaptchaVerifierModal
                   ref={recaptchaVerifier}
                   firebaseConfig={firebaseConfig}
-                //   attemptInvisibleVerification={true}
+                  //   attemptInvisibleVerification={true}
               />
               <View style={styles.mainContainer}>
                   <LogoDark width={40} height={40} />
@@ -106,6 +107,11 @@ const smsconfirmation = () => {
                       Resend Code
                   </Text>
               </View>
+              <ArrowNavigation
+                  left={{
+                      route: "(screens)/(initializations)/userInitialization",
+                  }}
+              />
           </SafeAreaView>
       </TouchableWithoutFeedback>
   );

@@ -5,7 +5,7 @@ import {
     UserType,
     WeeklyPostsCollectionsType,
     collections,
-} from "../app/schema";
+} from "../schema";
 import { useRouter } from "expo-router";
 import Colors from "../constants/Colors";
 import { styles } from "../app/stylesheets/styles";

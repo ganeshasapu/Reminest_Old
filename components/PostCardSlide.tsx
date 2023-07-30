@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Image } from "expo-image";
-import { PostType, UserType, mediaType } from "../app/schema";
+import { PostType, UserType, mediaType } from "../schema";
 import { ResizeMode, Video } from "expo-av";
 import { getDoc } from "firebase/firestore";
 

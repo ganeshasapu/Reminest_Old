@@ -7,9 +7,10 @@ import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-
 import Icon from "@expo/vector-icons/FontAwesome";
 import { Redirect, useRouter } from 'expo-router'
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { UserType, collections } from '../../schema';
-import { FirebaseContext } from '../../auth';
+import { db } from "../../firebase"
+import { UserType, collections } from '../../../schema';
+import { FirebaseContext } from '../../authProvider';
+import ArrowNavigation from '../../../components/ArrowNavigation';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;

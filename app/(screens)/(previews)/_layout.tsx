@@ -8,7 +8,6 @@ const _layout = () => {
         <Navigator initialRouteName="(screens)/(previews)/preview2">
             <SkipBar />
             <Slot />
-            <PreviewScreenNav />
         </Navigator>
     );
 };

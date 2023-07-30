@@ -1,9 +1,11 @@
-import { Text, View, StyleSheet, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, Dimensions, Image} from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
-import Colors from "../../../constants/Colors";
 import PreviewLoading2 from "../../../assets/vectors/PreviewLoading2";
-import PreviewPromptCard from "../../../components/PreviewPromptCard";
+import ArrowNavigation from "../../../components/ArrowNavigation";
+
+const h = Dimensions.get("window").height;
+const w = Dimensions.get("window").width;
 
 const preview2 = () => {
     return (
@@ -12,58 +14,31 @@ const preview2 = () => {
                 styles.mainContainer,
                 {
                     display: "flex",
-                    justifyContent: "center",
                     alignItems: "center",
                 },
             ]}
         >
-            <PreviewPromptCard
-                text="What is the story of the first time you met your partner?"
-                rotation="2deg"
-                cardWidth={210}
-                cardHeight={240}
-                cardLeft={25}
-                cardTop={140}
-                highlightLeft={13}
-                highlightTop={106}
-                highlightHeight={25}
-                highlightWidth={120}
-                color={Colors.orange}
-            />
-            <PreviewPromptCard
-                text="What was school like for you?"
-                rotation="5deg"
-                cardWidth={200}
-                cardHeight={180}
-                cardLeft={130}
-                cardTop={20}
-                highlightLeft={13}
-                highlightTop={68}
-                highlightHeight={25}
-                highlightWidth={86}
-                color={Colors.pink}
-            />
-            <PreviewPromptCard
-                text="What is your favourite holiday tradition?"
-                rotation="-1deg"
-                cardWidth={210}
-                cardHeight={240}
-                cardLeft={160}
-                cardTop={280}
-                highlightLeft={13}
-                highlightTop={105}
-                highlightHeight={52}
-                highlightWidth={130}
-                color={Colors.purple}
-            />
+            <View style={localStyles.imageContainer}>
+                <Image
+                    source={require("../../../assets/images/preview2.png")}
+                    style={[localStyles.image]}
+                />
+            </View>
 
-            <View style={localStyles.emptySpacing}></View>
             <View style={localStyles.textContainer}>
                 <Text style={[styles.bigtext, localStyles.centerText]}>
                     Suggest prompts for future weeks
                 </Text>
             </View>
             <PreviewLoading2 width={30} height={20} />
+            <ArrowNavigation
+                left={{
+                    route: "(screens)/(previews)/preview1",
+                }}
+                right={{
+                    route: "(screens)/(previews)/preview3",
+                }}
+            />
         </SafeAreaView>
     );
 };
@@ -74,15 +49,6 @@ const localStyles = StyleSheet.create({
     centerText: {
         textAlign: "center",
     },
-    shadow: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-    },
     textContainer: {
         display: "flex",
         justifyContent: "center",
@@ -92,5 +58,17 @@ const localStyles = StyleSheet.create({
     },
     emptySpacing: {
         height: "100%",
+    },
+    imageContainer: {
+        zIndex: -1,
+        marginBottom: 15,
+        height: h * 0.7,
+        width: "100%",
+    },
+    image: {
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        resizeMode: "contain",
     },
 });

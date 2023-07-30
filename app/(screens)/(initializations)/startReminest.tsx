@@ -17,8 +17,8 @@ import { Redirect, useRouter } from "expo-router";
 import { FamilyFormContext, UserFormContext } from "./_layout";
 import { doc, collection, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { UserType, WeeklyPostsCollectionsType, collections } from "../../schema";
-import { FirebaseContext } from "../../auth";
+import { UserType, WeeklyPostsCollectionsType, collections } from "../../../schema";
+import { FirebaseContext } from "../../authProvider";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 

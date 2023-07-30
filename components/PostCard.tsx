@@ -4,7 +4,7 @@ import PostCardSlide from "./PostCardSlide";
 import PostCardCover from "./PostCardCover";
 import { PostCardCoverProps } from "./PostCardCover";
 import { DocumentReference, getDoc } from "firebase/firestore";
-import { PostType, UserType, mediaType } from "../app/schema";
+import { PostType, UserType, mediaType } from "../schema";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;

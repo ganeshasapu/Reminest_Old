@@ -30,8 +30,8 @@ import {
     query,
     where,
 } from "firebase/firestore";
-import { collections, UserType } from "../../schema";
-import { FirebaseContext } from "../../auth";
+import { collections, UserType } from "../../../schema";
+import { FirebaseContext } from "../../authProvider";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 

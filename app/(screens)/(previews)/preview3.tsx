@@ -1,11 +1,11 @@
-import { Text, View, StyleSheet, ImageBackground, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, SafeAreaView, Dimensions, Image } from "react-native";
 import React from "react";
 import { styles } from "../../stylesheets/styles";
 import PreviewLoading3 from "../../../assets/vectors/PreviewLoading3";
+import ArrowNavigation from "../../../components/ArrowNavigation";
 
-const image1 = require("../../../assets/images/stock_image4.png");
-const image2 = require("../../../assets/images/stock_image5.png");
-const image3 = require("../../../assets/images/stock_image6.png");
+const h = Dimensions.get("window").height;
+const w = Dimensions.get("window").width;
 
 const preview3 = () => {
     return (
@@ -14,51 +14,26 @@ const preview3 = () => {
                 styles.mainContainer,
                 {
                     display: "flex",
-                    justifyContent: "center",
                     alignItems: "center",
                 },
             ]}
         >
-            <View style={[localStyles.imageContainer, localStyles.imageOne]}>
-                <ImageBackground
-                    source={image1}
-                    style={[
-                        localStyles.image,
-                        localStyles.shadow,
-                        { transform: [{ rotate: "-4deg" }] },
-                    ]}
+            <View style={localStyles.imageContainer}>
+                <Image
+                    source={require("../../../assets/images/preview3.png")}
+                    style={[localStyles.image]}
                 />
             </View>
 
-            <View style={[localStyles.imageContainer, localStyles.imageTwo]}>
-                <ImageBackground
-                    source={image2}
-                    style={[
-                        localStyles.image,
-                        localStyles.shadow,
-                        { transform: [{ rotate: "4deg" }] },
-                    ]}
-                />
-            </View>
-
-            <View style={[localStyles.imageContainer, localStyles.imageThree]}>
-                <ImageBackground
-                    source={image3}
-                    style={[
-                        localStyles.image,
-                        localStyles.shadow,
-                        { transform: [{ rotate: "-6deg" }] },
-                    ]}
-                />
-            </View>
-
-            <View style={localStyles.emptySpacing} />
             <View style={localStyles.textContainer}>
                 <Text style={[styles.bigtext, { textAlign: "center" }]}>
                     Capture your family’s unique story
                 </Text>
             </View>
             <PreviewLoading3 width={30} height={20} />
+            <ArrowNavigation
+                left={{ route: "(screens)/(previews)/preview2" }}
+            />
         </SafeAreaView>
     );
 };
@@ -66,15 +41,6 @@ const preview3 = () => {
 export default preview3;
 
 const localStyles = StyleSheet.create({
-    shadow: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-    },
     textContainer: {
         display: "flex",
         justifyContent: "center",
@@ -82,32 +48,16 @@ const localStyles = StyleSheet.create({
         width: "90%",
         paddingBottom: 10,
     },
-    emptySpacing: {
-        height: "100%",
-    },
     imageContainer: {
-        position: "absolute",
+        zIndex: -1,
+        marginBottom: 15,
+        height: h * 0.7,
+        width: "100%",
     },
     image: {
+        flex: 1,
         width: "100%",
         height: "100%",
-    },
-    imageOne: {
-        top: "5%",
-        left: "5%",
-        width: "85%",
-        height: "30%",
-    },
-    imageTwo: {
-        top: "30%",
-        right: "5%",
-        width: "80%",
-        height: "30%",
-    },
-    imageThree: {
-        top: "55%",
-        left: "5%",
-        width: "80%",
-        height: "30%",
+        resizeMode: "stretch",
     },
 });

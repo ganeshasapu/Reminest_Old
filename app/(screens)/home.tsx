@@ -2,7 +2,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { useRouter } from "expo-router";
 import Colors from "../../constants/Colors";
-import { FirebaseContext } from "../auth";
+import { FirebaseContext } from "../authProvider";
 
 const home = () => {
     const router = useRouter();

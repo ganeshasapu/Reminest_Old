@@ -1,8 +1,5 @@
 import React, { createContext, useState } from "react";
 import { Navigator, Slot } from "expo-router";
-import PreviewScreenNav from "../../../components/PreviewScreenNav";
-import PostingFlowNav from "./postingFlowNav";
-
 interface RouteContextProps {
     currentRouteIndex: number;
     setCurrentRouteIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -58,7 +55,6 @@ const _layout = () => {
             <RouteContext.Provider value={routeValue}>
                 <PostContext.Provider value={postValue}>
                     <Slot />
-                    <PostingFlowNav />
                 </PostContext.Provider>
             </RouteContext.Provider>
         </Navigator>

@@ -7,7 +7,7 @@ import {
     signInWithCredential,
     signOut,
 } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "./firebase"
 import { useRouter } from "expo-router";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
 import { MutableRefObject } from "react";

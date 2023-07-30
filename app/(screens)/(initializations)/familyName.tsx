@@ -1,4 +1,5 @@
 import {
+    Alert,
     Dimensions,
     Keyboard,
     SafeAreaView,
@@ -12,6 +13,7 @@ import { styles } from "../../stylesheets/styles";
 import Colors from "../../../constants/Colors";
 import BasicInput from "../../../components/BasicInput";
 import { FamilyFormContext, UserFormContext } from "./_layout";
+import ArrowNavigation from "../../../components/ArrowNavigation";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -19,9 +21,17 @@ const h = Dimensions.get("window").height;
 const familyName = () => {
 
     const { firstName, lastName } = useContext(UserFormContext);
-    const { familyNamePressedNext, familyName, setFamilyName } = useContext(FamilyFormContext);
+    const { familyName, setFamilyName } = useContext(FamilyFormContext);
+    const [invalid, setInvalid] = useState<boolean>(false);
 
-
+    async function checkValid(){
+        if (familyName == ""){
+            setInvalid(true)
+            Alert.alert("Please enter a family name");
+            return false
+        }
+        return true
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -36,7 +46,12 @@ const familyName = () => {
                             {firstName + " " + lastName}
                         </Text>
                     </View>
-                    <Text style={[localStyles.labelText, {marginTop: 40, marginBottom: 5}]}>
+                    <Text
+                        style={[
+                            localStyles.labelText,
+                            { marginTop: 40, marginBottom: 5 },
+                        ]}
+                    >
                         What Is Your Family Name?
                     </Text>
                     <BasicInput
@@ -47,13 +62,22 @@ const familyName = () => {
                         style={{
                             marginTop: 5,
                             borderColor:
-                                familyNamePressedNext && familyName == ""
+                                invalid && familyName == ""
                                     ? "red"
                                     : Colors.blue,
                         }}
                         placeholder="Family Name"
                     ></BasicInput>
                 </View>
+                <ArrowNavigation
+                    left={{
+                        route: "(screens)/(initializations)/familyLoginRegister",
+                    }}
+                    right={{
+                        callback: checkValid,
+                        route: "(screens)/(initializations)/familyInterests",
+                    }}
+                />
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );

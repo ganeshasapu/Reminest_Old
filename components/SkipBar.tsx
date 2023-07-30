@@ -1,8 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions } from "react-native";
 import { styles } from "../app/stylesheets/styles";
 import Colors from "../constants/Colors";
 import { SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
+
+const w = Dimensions.get("window").width;
+const h = Dimensions.get("window").height;
 
 const SkipBar = () => {
     const router = useRouter();
@@ -30,10 +33,9 @@ const localStyles = StyleSheet.create({
     barContainer: {
         display: "flex",
         width: "100%",
-        backgroundColor: Colors.background,
+        height: h * 0.03,
         flexDirection: "row-reverse",
-        paddingTop: 15,
-        marginRight: -40,
+        marginRight: -(w * 0.08),
     },
     safeAreaContainer: {
         backgroundColor: Colors.background,

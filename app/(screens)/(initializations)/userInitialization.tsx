@@ -1,4 +1,5 @@
 import {
+    Alert,
     Button,
     Dimensions,
     Keyboard,
@@ -22,7 +23,10 @@ import {
 } from "react-native-country-codes-picker";
 import { UserFormContext } from "./_layout";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
+import ArrowNavigation from "../../../components/ArrowNavigation";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../firebase";
+import { collections } from "../../../schema";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -61,6 +65,7 @@ const userInitialization = () => {
     const [show, setShow] = useState(false);
     const [flag, setFlag] = useState("🇨🇦");
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [invalid, setInvalid] = useState(false);
 
     const {
         firstName,
@@ -75,19 +80,50 @@ const userInitialization = () => {
         relationships,
         setCountryCode,
         countryCode,
-        userInitializationPressedNext,
     } = useContext(UserFormContext);
 
     const handleConfirm = (date: Date) => {
         setBirthday(date);
-        setDatePickerVisibility(false)
+        setDatePickerVisibility(false);
     };
 
+    async function checkValid() {
+        if (firstName === "" || lastName === "" || phoneNumber === "") {
+            Alert.alert("Please fill out all fields");
+            setInvalid(true);
+            return false;
+        } else if (phoneNumber.length != 10) {
+            Alert.alert("Please enter a valid phone number");
+            setInvalid(true);
+            return false;
+        }
+
+        const q = query(
+            collection(db, collections.users),
+            where("phoneNumber", "==", countryCode + phoneNumber)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            Alert.alert("This phone number is already registered");
+            return false;
+        }
+
+        return true;
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <SafeAreaView
-                style={{ flex: 1, backgroundColor: Colors.background }}
+                style={
+                    {
+                        flex: 1,
+                        backgroundColor: Colors.background,
+                        display: "flex",
+                        alignItems: "center",
+                    }
+                }
             >
                 {/* Modal */}
                 <CountryPicker
@@ -111,7 +147,8 @@ const userInitialization = () => {
                     popularCountries={["ca", "in", "cn"]}
                 />
                 {/* Modal */}
-                <View style={styles.mainContainer}>
+
+                <View style={[styles.mainContainer]}>
                     <View>
                         <LogoDark width={40} height={40} />
                     </View>
@@ -119,7 +156,12 @@ const userInitialization = () => {
                         Build Your Profile
                     </Text>
 
-                    <View style={{flex: 1, justifyContent: "center"}}>
+                    <View
+                        style={{
+                            justifyContent: "center",
+                            height: h * 0.7,
+                        }}
+                    >
                         <Text style={[localStyles.labelText]}>
                             What's Your Name?
                         </Text>
@@ -138,8 +180,7 @@ const userInitialization = () => {
                                 style={{
                                     marginTop: 5,
                                     borderColor:
-                                        userInitializationPressedNext &&
-                                        firstName == ""
+                                        invalid && firstName == ""
                                             ? "red"
                                             : Colors.blue,
                                     flex: 1,
@@ -153,8 +194,7 @@ const userInitialization = () => {
                                 style={{
                                     marginTop: 5,
                                     borderColor:
-                                        userInitializationPressedNext &&
-                                        lastName == ""
+                                        invalid && lastName == ""
                                             ? "red"
                                             : Colors.blue,
                                     flex: 1,
@@ -180,7 +220,10 @@ const userInitialization = () => {
                                     {flag}
                                 </Text>
                                 <Text
-                                    style={{ lineHeight: 35, marginRight: 5 }}
+                                    style={{
+                                        lineHeight: 35,
+                                        marginRight: 5,
+                                    }}
                                 >
                                     {countryCode}
                                 </Text>
@@ -206,8 +249,7 @@ const userInitialization = () => {
                                     value={phoneNumber}
                                     style={{
                                         borderColor:
-                                            userInitializationPressedNext &&
-                                            phoneNumber.length != 10
+                                            invalid && phoneNumber.length != 10
                                                 ? "red"
                                                 : Colors.blue,
                                     }}
@@ -277,6 +319,15 @@ const userInitialization = () => {
                         </View>
                     </View>
                 </View>
+                <ArrowNavigation
+                    left={{
+                        route: "(screens)/(initializations)/signUpSignIn",
+                    }}
+                    right={{
+                        callback: checkValid,
+                        route: "(screens)/(initializations)/smsconfirmation",
+                    }}
+                />
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
@@ -285,30 +336,6 @@ const userInitialization = () => {
 export default userInitialization;
 
 const localStyles = StyleSheet.create({
-    uploadButton: {
-        backgroundColor: Colors.blue,
-        borderRadius: 50,
-        width: 90,
-        height: 90,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    uploadButtonContainer: {
-        position: "absolute",
-        left: "8.5%",
-        top: "11%",
-    },
-    input: {
-        width: "80%",
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        color: "#000",
-        backgroundColor: "#fff",
-        padding: 10,
-        borderRadius: 10,
-    },
     labelText: {
         color: "#442626",
         fontFamily: "archivo",
@@ -370,5 +397,5 @@ const localStyles = StyleSheet.create({
         color: "#000",
         fontFamily: "archivo",
         fontSize: 16,
-    }
+    },
 });
