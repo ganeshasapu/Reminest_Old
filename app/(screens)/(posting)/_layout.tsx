@@ -1,12 +1,6 @@
 import React, { createContext, useState } from "react";
 import { Navigator, Slot } from "expo-router";
-interface RouteContextProps {
-    currentRouteIndex: number;
-    setCurrentRouteIndex: React.Dispatch<React.SetStateAction<number>>;
-}
 
-export const RouteContext = createContext({
-} as RouteContextProps);
 
 interface PostContextProps {
     videoUri: string;
@@ -24,17 +18,11 @@ interface PostContextProps {
 export const PostContext = createContext({} as PostContextProps);
 
 const _layout = () => {
-    const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
     const [videoUri, setVideoUri] = useState("");
     const [imageUri, setImageUri] = useState("");
     const [thumbnailUri, setThumbnailUri] = useState("");
     const [prompt, setPrompt] = useState("");
     const [collectionID, setCollectionID] = useState("");
-
-    const routeValue = {
-        currentRouteIndex,
-        setCurrentRouteIndex,
-    };
 
     const postValue = {
         videoUri,
@@ -52,11 +40,9 @@ const _layout = () => {
 
     return (
         <Navigator initialRouteName="(screens)/(previews)/preview2">
-            <RouteContext.Provider value={routeValue}>
                 <PostContext.Provider value={postValue}>
                     <Slot />
                 </PostContext.Provider>
-            </RouteContext.Provider>
         </Navigator>
     );
 };

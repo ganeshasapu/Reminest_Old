@@ -35,7 +35,6 @@ interface UserFormContextProps {
 
 interface FamilyFormContextProps {
     familyName: string;
-    familyNamePressedNext: boolean;
     heritageOptions: FamilyInterest[];
     activityOptions: FamilyInterest[];
     milestoneOptions: FamilyInterest[];
@@ -51,13 +50,6 @@ export const UserFormContext = createContext({} as UserFormContextProps);
 
 export const FamilyFormContext = createContext({} as FamilyFormContextProps);
 
-interface RouteContextProps {
-    currentRouteIndex: number;
-    setCurrentRouteIndex: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export const RouteContext = createContext({
-} as RouteContextProps);
 
 const familyOptions = [
     { title: "Son", selected: false },
@@ -98,7 +90,6 @@ const initialMilestoneOptions = [
 ];
 
 const _layout = () => {
-    const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [countryCode, setCountryCode] = useState("+1" as string);
@@ -120,8 +111,6 @@ const _layout = () => {
      );
     const [familyName, setFamilyName] = useState("");
 
-
-    const [familyNamePressedNext, setFamilyNamePressedNext] = useState(false);
 
 
     function handleSetRelationships (relationship: string) {
@@ -165,13 +154,9 @@ const _layout = () => {
     }
 
     return (
-        <RouteContext.Provider
-            value={{ currentRouteIndex, setCurrentRouteIndex }}
-        >
             <FamilyFormContext.Provider
                 value={{
                     familyName: familyName,
-                    familyNamePressedNext: familyNamePressedNext,
                     heritageOptions: heritageOptions,
                     activityOptions: activityOptions,
                     milestoneOptions: milestoneOptions,
@@ -210,7 +195,6 @@ const _layout = () => {
                     </Navigator>
                 </UserFormContext.Provider>
             </FamilyFormContext.Provider>
-        </RouteContext.Provider>
     );
 };
 
