@@ -1,53 +1,41 @@
 import React, { createContext, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-    PhoneAuthCredential,
-    PhoneAuthProvider,
-    User,
-    signInWithCredential,
-    signOut,
-} from "firebase/auth";
-import { auth } from "./firebase"
+import { supabase } from "../supabase";
+import { Alert } from "react-native";
+import { User } from "@supabase/supabase-js";
 import { useRouter } from "expo-router";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { MutableRefObject } from "react";
 
-interface FirebaseContextProps {
+interface AuthContextProps {
     user: User | null;
     loading: boolean;
     logoutUser: () => void;
-    sendVerification: (
-        recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
-        fullNumber: string
-    ) => void;
-    registerUser: (code: string) => Promise<PhoneAuthCredential>;
+    sendVerification: (fullNumber: string) => void;
+    verifyUser: (code: string) => Promise<User | null>;
     checkLoginStatus: () => void;
 }
 
-const FirebaseContext = createContext({} as FirebaseContextProps);
+const AuthContext = createContext({} as AuthContextProps);
 
 const FirebaseProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [verificationId, setVerificationId] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
 
     const router = useRouter();
 
-    const sendVerification = async (
-        recaptchaVerifier: MutableRefObject<FirebaseRecaptchaVerifierModal>,
-        fullNumber: string
-    ) => {
-        if (recaptchaVerifier.current == null) return;
-
-        const phoneProvider = new PhoneAuthProvider(auth);
-        await phoneProvider.verifyPhoneNumber(
-            fullNumber,
-            recaptchaVerifier.current,
-        ).then((result) => {
-            setVerificationId(result);
-        }).catch((error) => {
-            console.log(error)
-        })
+    const sendVerification = async (fullNumber: string) => {
+        try {
+            const { error, data } = await supabase.auth.signInWithOtp({
+                phone: fullNumber,
+            });
+            if (error) {
+                Alert.alert("Error", error.message);
+            } else {
+                setPhoneNumber(fullNumber);
+            }
+        } catch (error: any) {
+            Alert.alert("Error", error.message);
+        }
     };
 
     const checkLoginStatus = async () => {
@@ -63,37 +51,41 @@ const FirebaseProvider = ({ children }: any) => {
     };
 
     const logoutUser = async () => {
-        try {
-            await signOut(auth);
-            setUser(null);
-            await AsyncStorage.removeItem("user");
-            router.push("(screens)/(initializations)/signUpSignIn");
-        } catch (error) {
-            console.log("Error logging out:", error);
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            Alert.alert("Error logging out", error.message);
         }
+
+        await AsyncStorage.removeItem("user").then(() =>{
+            setUser(null);
+            router.push("(screens)/(initializations)/signUpSignIn");
+        })
+
     };
 
-    const registerUser = async (code: string) => {
-        if (!code) {
-            throw new Error("Invalid code");
+    const verifyUser = async (code: string): Promise<User | null> => {
+        try {
+            // Verify the phone number with the confirmation code
+            const { error, data } = await supabase.auth.verifyOtp({
+                phone: phoneNumber,
+                token: code,
+                type: "sms",
+            });
+
+            if (error) {
+                Alert.alert("Error", error.message);
+                return null
+            } else {
+                // User successfully verified the phone number
+                setUser(data.user);
+                await AsyncStorage.setItem("user", JSON.stringify(data.user));
+                return data.user;
+            }
+        } catch (error: any) {
+            Alert.alert("Error", error.message);
+            return null
         }
-        if (!verificationId) {
-            throw new Error("No verification ID");
-        }
-
-        const credential = PhoneAuthProvider.credential(verificationId, code);
-        // const credential = await confirmationResult.confirm("123456");
-
-        const result = await signInWithCredential(auth, credential);
-        // setUser(credential.user);
-
-        if (!result || !result.user) {
-            throw new Error("Invalid result from Firebase authentication");
-        }
-        setUser(result.user);
-        AsyncStorage.setItem("user", JSON.stringify(result.user));
-
-        return credential;
     };
 
     const value = {
@@ -101,15 +93,13 @@ const FirebaseProvider = ({ children }: any) => {
         loading,
         logoutUser,
         sendVerification,
-        registerUser,
-        checkLoginStatus
+        verifyUser,
+        checkLoginStatus,
     };
 
     return (
-        <FirebaseContext.Provider value={value}>
-            {children}
-        </FirebaseContext.Provider>
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
     );
 };
 
-export { FirebaseContext, FirebaseProvider };
+export { AuthContext, FirebaseProvider };

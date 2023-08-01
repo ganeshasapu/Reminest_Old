@@ -16,7 +16,7 @@ import BasicInput from "../../../components/BasicInput";
 import Colors from "../../../constants/Colors";
 import { useRouter } from "expo-router";
 import AppName from "../../../assets/vectors/AppName";
-import { RouteContext, UserFormContext } from "./_layout";
+import { UserFormContext } from "./_layout";
 import { AntDesign } from "@expo/vector-icons";
 import {
     CountryButton,
@@ -31,7 +31,8 @@ import {
     where,
 } from "firebase/firestore";
 import { collections, UserType } from "../../../schema";
-import { FirebaseContext } from "../../authProvider";
+import { supabase } from "../../../supabase";
+import { AuthContext } from "../../authProvider";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 
@@ -74,10 +75,10 @@ const signUpSignIn = () => {
     const [pressedLogIn, setPressedLogIn] = useState(false);
     const router = useRouter();
 
-    const {checkLoginStatus} = useContext(FirebaseContext);
-    const { setCurrentRouteIndex } = useContext(RouteContext);
     const { setCountryCode, countryCode, phoneNumber, setPhoneNumber } =
         useContext(UserFormContext);
+
+    const {sendVerification} = useContext(AuthContext);
 
 
     const handleLogIn = async () => {
@@ -87,14 +88,13 @@ const signUpSignIn = () => {
             return;
         }
 
-        const q = query(
-            collection(db, collections.users),
-            where("phoneNumber", "==", countryCode + phoneNumber)
-        );
+        const { data, error } = await supabase
+            .from("users")
+            .select()
+            .eq("phoneNumber", countryCode + phoneNumber);
 
-        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
+        if (error || data.length == 0){
             Alert.alert("This phone number is not registered");
             return;
         }
@@ -103,11 +103,10 @@ const signUpSignIn = () => {
             pathname: "/(screens)/(initializations)/smsconfirmation",
             params: { login: true },
         });
-        setCurrentRouteIndex(2);
+        sendVerification(countryCode + phoneNumber)
     };
     const handleSignUp = () => {
         router.push("(screens)/(initializations)/userInitialization");
-        setCurrentRouteIndex(1);
     };
 
     return (

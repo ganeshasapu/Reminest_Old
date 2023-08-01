@@ -27,6 +27,7 @@ import ArrowNavigation from "../../../components/ArrowNavigation";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import { collections } from "../../../schema";
+import { AuthContext } from "../../authProvider";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -82,6 +83,8 @@ const userInitialization = () => {
         countryCode,
     } = useContext(UserFormContext);
 
+    const {sendVerification} = useContext(AuthContext)
+
     const handleConfirm = (date: Date) => {
         setBirthday(date);
         setDatePickerVisibility(false);
@@ -110,6 +113,7 @@ const userInitialization = () => {
             return false;
         }
 
+        sendVerification(countryCode + phoneNumber)
         return true;
     }
 

@@ -14,8 +14,8 @@ import { styles } from "../../stylesheets/styles";
 import Colors from "../../../constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { FirebaseContext } from "../../authProvider";
-import { PostContext, RouteContext } from "./_layout";
+import { AuthContext } from "../../authProvider";
+import { PostContext } from "./_layout";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Loading from "../loading";
 import ArrowNavigation from "../../../components/ArrowNavigation";
@@ -24,14 +24,12 @@ const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 const addMedia = () => {
-    const { user } = useContext(FirebaseContext);
+    const { user } = useContext(AuthContext);
     const { imageUri, setImageUri } = useContext(PostContext);
     const [mediaPermission, setMediaPermission] = useState<null | ImagePicker.MediaLibraryPermissionResponse>(null);
 
     const router = useRouter();
 
-    const { currentRouteIndex, setCurrentRouteIndex } =
-        useContext(RouteContext);
 
      async function getMediaPermission() {
         if (mediaPermission) return;
@@ -61,14 +59,12 @@ const addMedia = () => {
         });
 
         if (!result.canceled) {
-            setCurrentRouteIndex(currentRouteIndex + 1);
             setImageUri(result.assets[0].uri);
         }
     };
 
     const skipImage = () => {
         router.push("/(screens)/(posting)/confirmPost");
-        setCurrentRouteIndex(currentRouteIndex + 1);
     }
 
     async function goingBack(){

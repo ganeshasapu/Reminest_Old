@@ -12,9 +12,6 @@ export interface UserType {
     firstName: string;
     lastName: string;
     phoneNumber: string;
-    families: string[];
-    posts: DocumentReference[];
-    profilePicture: string;
 }
 
 export interface FamilyType {

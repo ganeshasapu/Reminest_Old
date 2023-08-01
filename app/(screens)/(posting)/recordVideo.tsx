@@ -23,8 +23,8 @@ import {
     collections,
 } from "../../../schema";
 import { Camera, CameraType, VideoQuality } from "expo-camera";
-import { FirebaseContext } from "../../authProvider";
-import { PostContext, RouteContext } from "./_layout";
+import { AuthContext } from "../../authProvider";
+import { PostContext } from "./_layout";
 import VideoPreview from "./VideoPreview";
 import Loading from "../loading";
 
@@ -49,8 +49,7 @@ const recordVideo = () => {
 
     let lastPress = 0;
 
-    const { user } = useContext(FirebaseContext);
-    const { setCurrentRouteIndex } = useContext(RouteContext);
+    const { user } = useContext(AuthContext);
     const { videoUri, setVideoUri, setPrompt, setCollectionID, collectionID } = useContext(PostContext);
 
 
@@ -158,7 +157,6 @@ const recordVideo = () => {
             "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         );
         setIsRecording(false);
-        setCurrentRouteIndex(1);
     };
 
     const recordVideo = async () => {
@@ -184,7 +182,6 @@ const recordVideo = () => {
             clearInterval(interval);
             setTimer(300);
             setVideoUri(video.uri);
-            setCurrentRouteIndex(1);
             setIsRecording(false);
         });
     };

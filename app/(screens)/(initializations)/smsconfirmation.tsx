@@ -1,15 +1,16 @@
 import { Alert, Dimensions, Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
-import React, { MutableRefObject, useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Colors from '../../../constants/Colors';
 import { styles } from '../../stylesheets/styles';
 import LogoDark from '../../../assets/vectors/LogoDark';
 import { UserFormContext } from "./_layout";
 import BasicInput from '../../../components/BasicInput';
-import { FirebaseRecaptchaVerifierModal,   } from 'expo-firebase-recaptcha';
-import { firebaseConfig } from '../../firebase';
-import { FirebaseContext } from '../../authProvider';
+import { AuthContext } from '../../authProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import ArrowNavigation from '../../../components/ArrowNavigation';
+import { supabase } from '../../../supabase';
+import { UserType } from '../../../schema';
+import { User } from '@supabase/supabase-js';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -18,21 +19,41 @@ const CELL_COUNT = 6;
 
 const smsconfirmation = () => {
     const { login } = useLocalSearchParams();
-    const { phoneNumber, countryCode } = useContext(UserFormContext);
+    const { phoneNumber, countryCode, birthday, firstName, lastName } = useContext(UserFormContext);
     const [code, setCode] = useState<string>("");
-    const { registerUser, sendVerification } = useContext(FirebaseContext);
-    const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(
-        null
-    );
+    const { verifyUser, sendVerification} = useContext(AuthContext);
     const router = useRouter();
 
+    async function createUserProfile(user: User){
+        if (!user) return;
+
+        const userData = {
+            id: user.id,
+            birthday: birthday,
+            phoneNumber: countryCode + phoneNumber,
+            firstName: firstName,
+            lastName: lastName,
+        } as UserType
+
+        const { error: createError, data } = await supabase
+            .from("users")
+            .insert(userData)
+            .match({ id: user.id });
+
+        if (createError) {
+            Alert.alert("Error", createError.message);
+        }
+    }
+
     const register = () => {
-        registerUser(code)
-            .then((result: any) => {
+        verifyUser(code)
+            .then((user) => {
+                if (!user) return;
                 if (login) {
                     router.push("(screens)/feed")
                 }
                 else {
+                    createUserProfile(user);
                     router.push("(screens)/(initializations)/familyLoginRegister");
                 }
             })
@@ -45,14 +66,6 @@ const smsconfirmation = () => {
     };
 
     useEffect(() => {
-        if (!recaptchaVerifier.current) return;
-        sendVerification(
-            recaptchaVerifier as MutableRefObject<FirebaseRecaptchaVerifierModal>,
-            countryCode + phoneNumber
-        );
-    }, [recaptchaVerifier]);
-
-    useEffect(() => {
         if (code.length === CELL_COUNT) {
             Keyboard.dismiss();
             register();
@@ -62,11 +75,6 @@ const smsconfirmation = () => {
   return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }}>
-              <FirebaseRecaptchaVerifierModal
-                  ref={recaptchaVerifier}
-                  firebaseConfig={firebaseConfig}
-                  //   attemptInvisibleVerification={true}
-              />
               <View style={styles.mainContainer}>
                   <LogoDark width={40} height={40} />
                   <Text style={[styles.titletext, { marginTop: 10 }]}>
@@ -90,7 +98,6 @@ const smsconfirmation = () => {
                   <Text
                       onPress={() => {
                           sendVerification(
-                              recaptchaVerifier as MutableRefObject<FirebaseRecaptchaVerifierModal>,
                               countryCode + phoneNumber
                           );
                       }}

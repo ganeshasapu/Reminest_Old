@@ -7,7 +7,7 @@ import {
     TouchableWithoutFeedback,
 } from "react-native";
 import { useContext, useEffect, useState } from "react";
-import { FirebaseContext } from "../authProvider";
+import { AuthContext } from "../authProvider";
 import { doc } from "firebase/firestore";
 import { getDoc } from "firebase/firestore";
 import { db } from "../firebase";
@@ -29,7 +29,7 @@ const feed = () => {
     >([]);
     const [isLoading, setLoading] = useState(true);
 
-    const { user, logoutUser } = useContext(FirebaseContext);
+    const { user, logoutUser } = useContext(AuthContext);
 
     // const router = useRouter();
     // useEffect(() => {
@@ -40,7 +40,7 @@ const feed = () => {
         const fetchUserData = async () => {
             if (user) {
                 const userRef = await getDoc(
-                    doc(db, collections.users, user.uid)
+                    doc(db, collections.users, user.id)
                 );
                 if (userRef.exists()) {
                     setUserData(userRef.data() as UserType);
@@ -94,6 +94,7 @@ const feed = () => {
 
     if (user === null) return;
 
+    console.log(isLoading, userData, familyData, weeklyPostsCollections)
     if (
         isLoading ||
         !userData ||
@@ -107,9 +108,11 @@ const feed = () => {
                 style={{ flex: 1, backgroundColor: Colors.background }}
             >
                 <View style={styles.mainContainer}>
-                    <TouchableWithoutFeedback onPress={() => {
-                        logoutUser()
-                    }}>
+                    <TouchableWithoutFeedback
+                        onPress={() => {
+                            logoutUser();
+                        }}
+                    >
                         <LogoName width={150} height={50} />
                     </TouchableWithoutFeedback>
                     <ScrollView
@@ -119,7 +122,7 @@ const feed = () => {
                         {weeklyPostsCollections.reverse().map((post, index) => (
                             <PostCard
                                 userHasSubmitted={post.usersResponded.includes(
-                                    user.uid
+                                    user.id
                                 )}
                                 post={post}
                                 weeklyPostIndex={

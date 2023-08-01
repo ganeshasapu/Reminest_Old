@@ -2,11 +2,12 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { useRouter } from "expo-router";
 import Colors from "../../constants/Colors";
-import { FirebaseContext } from "../authProvider";
+import { AuthContext } from "../authProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const home = () => {
     const router = useRouter();
-    const { user, logoutUser } = useContext(FirebaseContext);
+    const { user, logoutUser } = useContext(AuthContext);
 
     useEffect(() => {
         // router.push("(screens)/(initializations)/userInitialization");

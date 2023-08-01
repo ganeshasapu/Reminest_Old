@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Redirect } from 'expo-router'
-import { FirebaseContext } from './authProvider';
+import { AuthContext } from "./authProvider";
 import Loading from './(screens)/loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const index = () => {
 
-  const { checkLoginStatus, loading, user } = useContext(FirebaseContext);
+  const { checkLoginStatus, loading, user } = useContext(AuthContext);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState<boolean | null>(null);
 
   async function checkFirstTimeUser() {
@@ -35,7 +35,10 @@ const index = () => {
   }
 
   if (!user){
-    return <Redirect href="(screens)/(initializations)/signUpSignIn" />;
+    //   return <Redirect href="(screens)/(initializations)/signUpSignIn" />;
+    //   return <Redirect href="(screens)/(admin)/test" />;
+    return <Redirect href="(screens)/home" />;
+
   }
 
 
@@ -43,7 +46,7 @@ const index = () => {
       // <Redirect href="(screens)/register" />
     //   <Redirect href="(screens)/home" />
       // <Redirect href="(screens)/(posting)/confirmPost" />
-      <Redirect href="(screens)/feed" />
+      <Redirect href="(screens)/home" />
       // <Redirect href="(screens)/(initializations)/userInitialization" />
       // <Redirect href="(screens)/(previews)/preview1" />
   );

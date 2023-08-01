@@ -8,9 +8,8 @@ import Icon from "@expo/vector-icons/FontAwesome";
 import { Redirect, useRouter } from 'expo-router'
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../firebase"
-import { UserType, collections } from '../../../schema';
-import { FirebaseContext } from '../../authProvider';
-import ArrowNavigation from '../../../components/ArrowNavigation';
+import { collections } from '../../../schema';
+import { AuthContext } from "../../authProvider";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -26,7 +25,7 @@ const familiyLoginRegister = () => {
         setValue: setFamilyCode,
     });
 
-    const {user} = useContext(FirebaseContext)
+    const { user } = useContext(AuthContext);
     const router = useRouter();
 
 
@@ -34,25 +33,6 @@ const familiyLoginRegister = () => {
         router.push("(screens)/(initializations)/familyName");
     };
 
-    async function createUser(familyCode: string) {
-        const userData: UserType = {
-            firstName: firstName,
-            lastName: lastName,
-            birthday: birthday,
-            phoneNumber: countryCode + phoneNumber,
-            families: [familyCode],
-            posts: [],
-            profilePicture: "",
-        };
-        try {
-            if (!user) return;
-            const userRef = doc(db, collections.users, user.uid);
-            await setDoc(userRef, userData);
-            console.log("Document written with ID:", user.uid);
-        } catch (error) {
-            console.error("Error adding document:", error);
-        }
-    }
 
     async function joinFamily(familyCode: string) {
         if (!user) return;
@@ -63,7 +43,7 @@ const familiyLoginRegister = () => {
             return
         }
         const existingUsers = familySnapshot.data().users;
-        const updatedUsers = [...existingUsers, user.uid];
+        const updatedUsers = [...existingUsers, user.id];
 
         return setDoc(familyRef, {users: updatedUsers}, {merge: true})
 
@@ -75,7 +55,6 @@ const familiyLoginRegister = () => {
             try {
                 const success = joinFamily(familyCode);
                 if (!success) return;
-                createUser(familyCode).then(() => {router.push("(screens)/feed")})
             }
             catch(err){
                 console.log(err)
@@ -94,7 +73,7 @@ const familiyLoginRegister = () => {
                 style={{ flex: 1, backgroundColor: Colors.background }}
             >
                 <View style={styles.mainContainer}>
-                    <View style={{flex: 1, justifyContent: "center"}}>
+                    <View style={{ flex: 1, justifyContent: "center" }}>
                         <View style={localStyles.textContainer}>
                             <Text style={localStyles.welcomeText}>Welcome</Text>
                             <Text style={localStyles.nameText}>
@@ -119,6 +98,7 @@ const familiyLoginRegister = () => {
                             textContentType="oneTimeCode"
                             renderCell={({ index, symbol, isFocused }) => (
                                 <View
+                                    key={index}
                                     style={[
                                         localStyles.cellContainer,
                                         styles.shadow,

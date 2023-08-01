@@ -26,7 +26,7 @@ import {
 } from "firebase/storage";
 import { storage, db } from "../../firebase";
 import { mediaType, collections } from "../../../schema";
-import { FirebaseContext } from "../../authProvider";
+import { AuthContext } from "../../authProvider";
 import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
 import { PostContext } from "./_layout";
@@ -41,7 +41,7 @@ const CHUNK_SIZE = 1024 * 1024;
 
 const confirmPost = () => {
     const router = useRouter();
-    const { user } = useContext(FirebaseContext);
+    const { user } = useContext(AuthContext);
 
     if (!user) return <Text>No User Found</Text>;
 
@@ -134,7 +134,7 @@ const confirmPost = () => {
             like_count: 0,
             media: media as mediaType[],
             timestamp: Date.now(),
-            author: doc(db, collections.users, user.uid),
+            author: doc(db, collections.users, user.id),
         };
         const postCollectionRef = collection(db, collections.posts);
         const postRef = await addDoc(postCollectionRef, postData);
@@ -147,10 +147,10 @@ const confirmPost = () => {
 
         await updateDoc(collectionRef, {
             posts: arrayUnion(postRef),
-            usersResponded: arrayUnion(user.uid),
+            usersResponded: arrayUnion(user.id),
         });
 
-        const userRef = doc(db, collections.users, user.uid);
+        const userRef = doc(db, collections.users, user.id);
         await updateDoc(userRef, {
             posts: arrayUnion(postRef),
         });

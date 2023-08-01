@@ -18,7 +18,7 @@ import { FamilyFormContext, UserFormContext } from "./_layout";
 import { doc, collection, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { UserType, WeeklyPostsCollectionsType, collections } from "../../../schema";
-import { FirebaseContext } from "../../authProvider";
+import { AuthContext } from "../../authProvider";
 
 const logo = require("../../../assets/images/fadedLogoIcon.png");
 
@@ -30,7 +30,7 @@ const startReminest = () => {
 
     const { heritageOptions, activityOptions, milestoneOptions, familyName } = useContext(FamilyFormContext);
     const { firstName, lastName, birthday, phoneNumber, countryCode } = useContext(UserFormContext);
-    const {user} = useContext(FirebaseContext);
+    const { user } = useContext(AuthContext);
     const [pressDisabled, setPressDisabled] = useState(false);
 
     async function createFamily(familyCode: string, weekly_post_id: string) {
@@ -59,8 +59,8 @@ const startReminest = () => {
                 familyName: familyName,
                 familyInterests: selectedTitles,
                 weekly_posts_collections: [weekly_post_id],
-                users: [user.uid],
-                creator: user.uid,
+                users: [user.id],
+                creator: user.id,
             };
 
             const familyRef = await doc(collection(db, "families"), familyCode);
@@ -83,9 +83,9 @@ const startReminest = () => {
             profilePicture: ""
         };
          try {
-             const userRef = doc(collection(db, collections.users), user.uid);
+             const userRef = doc(collection(db, collections.users), user.id);
              await setDoc(userRef, userData);
-             console.log("Document written with ID:", user.uid);
+             console.log("Document written with ID:", user.id);
          } catch (error) {
              console.error("Error adding document:", error);
          }
