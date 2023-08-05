@@ -23,14 +23,6 @@ import {
     CountryItem,
     CountryPicker,
 } from "react-native-country-codes-picker";
-import { db } from "../../firebase";
-import {
-    collection,
-    getDocs,
-    query,
-    where,
-} from "firebase/firestore";
-import { collections, UserType } from "../../../schema";
 import { supabase } from "../../../supabase";
 import { AuthContext } from "../../authProvider";
 
@@ -88,10 +80,11 @@ const signUpSignIn = () => {
             return;
         }
 
+
         const { data, error } = await supabase
             .from("users")
             .select()
-            .eq("phoneNumber", countryCode + phoneNumber);
+            .eq("phone_number", countryCode + phoneNumber);
 
 
         if (error || data.length == 0){

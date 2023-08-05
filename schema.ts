@@ -1,44 +1,69 @@
-import { DocumentReference } from "firebase/firestore";
+type UUID = string;
+type BIGINT = number;
+type INT = number
+type TIMESTAMP = Date; // or Date, depending on how you handle dates
+type DATE = Date; // or Date
+type TEXT = string;
+type VARCHAR = string;
+type INTEGER = number;
+type SERIAL = number;
 
-export const collections = {
+export type MediaType = "VIDEO" | "IMAGE";
+
+export const tables = {
     users: "users",
     families: "families",
-    weekly_post_collections: "weekly_post_collections",
+    familyMembers: "family_members",
+    postCollections: "post_collections",
+    usersResponded: "users_responded",
     posts: "posts",
-};
-
-export interface UserType {
-    birthday: Date;
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
+    media: "media",
 }
 
-export interface FamilyType {
-    creator: string;
-    familyInterests: string[];
-    familyName: string;
-    users: string[];
-    weekly_posts_collections: string[];
+export interface UsersType {
+    id?: UUID;
+    created_at?: TIMESTAMP;
+    birthday: DATE;
+    first_name: VARCHAR;
+    last_name: VARCHAR;
+    phone_number: VARCHAR;
 }
 
-export interface WeeklyPostsCollectionsType {
-    prompt: string;
-    posts: DocumentReference[];
-    usersResponded: string[];
-    comments: string[];
-    highlightedWord: string;
-    family: DocumentReference;
+export interface FamiliesType {
+    id?: INT;
+    created_at?: TIMESTAMP;
+    family_interests: TEXT[];
+    family_name: TEXT;
 }
 
-export interface mediaType {
-    url: string;
-    type: "VIDEO" | "IMAGE";
+export interface FamilyMembersType {
+    user_id: UUID;
+    family_id: BIGINT;
 }
 
-export interface PostType {
-    like_count: number;
-    media: mediaType[];
-    timestamp: Date;
-    author: DocumentReference;
+export interface PostCollectionsType {
+    id?: BIGINT;
+    created_at?: TIMESTAMP;
+    family_id: BIGINT;
+    prompt: TEXT;
+    highlighted: TEXT;
+}
+
+export interface UsersRespondedType {
+    user_id: UUID;
+    post_collection_id: BIGINT;
+}
+
+export interface PostsType {
+    id?: BIGINT;
+    created_at: TIMESTAMP;
+    author: UUID;
+    like_count: INTEGER;
+}
+
+export interface Media {
+    id?: SERIAL;
+    type: MediaType;
+    url: TEXT;
+    post_id: BIGINT;
 }

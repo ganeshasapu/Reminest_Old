@@ -1,22 +1,22 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Image } from "expo-image";
-import { PostType, UserType, mediaType } from "../schema";
 import { ResizeMode, Video } from "expo-av";
-import { getDoc } from "firebase/firestore";
+import { Media, PostsType, UsersType } from "../schema";
+import { fetchUserFromUserId } from "../db";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 interface PostCardSlideProps {
     slideIndex: number;
-    post: PostType;
-    media: mediaType;
+    post: PostsType;
+    media: Media;
     currentInterval: number;
 }
 
 const PostCardSlide = ({ slideIndex, post, media, currentInterval }: PostCardSlideProps) => {
-    const [author, setAuthor] = useState<UserType | null>(null);
+    const [author, setAuthor] = useState<UsersType | null>(null);
     const videoRef = useRef<Video | null>(null);
     const handleVideoRef = useCallback((ref: Video | null) =>{
         if (ref) {
@@ -26,8 +26,11 @@ const PostCardSlide = ({ slideIndex, post, media, currentInterval }: PostCardSli
 
     useEffect(() => {
         const fetchAuthors = async () => {
-            const author = await getDoc(post.author);
-            setAuthor(author.data() as UserType);
+            const author = await fetchUserFromUserId(post.author);
+            if (!author) {
+                return;
+            }
+            setAuthor(author);
         };
 
         fetchAuthors();
@@ -88,9 +91,9 @@ const PostCardSlide = ({ slideIndex, post, media, currentInterval }: PostCardSli
                 />
             )}
             <View style={localStyles.captionContainer}>
-                <Text style={localStyles.nameText}>{author.firstName}</Text>
+                <Text style={localStyles.nameText}>{author.first_name}</Text>
                 <Text style={localStyles.dateText}>
-                    {getFormattedDate(new Date(post.timestamp))}
+                    {getFormattedDate(new Date(post.created_at))}
                 </Text>
             </View>
         </View>

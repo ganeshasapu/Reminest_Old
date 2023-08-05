@@ -6,7 +6,7 @@ import { styles } from "../app/stylesheets/styles";
 
 
 interface FamilyCodeProps {
-    code: string;
+    code: number;
 }
 
 const w = Dimensions.get("window").width;
@@ -14,21 +14,29 @@ const h = Dimensions.get("window").height;
 
 const FamilyCode = ({ code }: FamilyCodeProps) => {
 
+    const codeString = code.toString();
+
     return (
         <View style={{ marginVertical: 10 }}>
-                <Text
-                    onPress={() => {
-                        Clipboard.setStringAsync(code).then(() => {
-                            Alert.alert("Copied!", "Send this code to your family");
-                        }
-                        );
-                    }}
-                    style={[styles.text, { textAlign: "center", color: Colors.blue, marginBottom: 10}]}
-                >
-                    Click to copy code
-                </Text>
+            <Text
+                onPress={() => {
+                    Clipboard.setStringAsync(codeString).then(() => {
+                        Alert.alert("Copied!", "Send this code to your family");
+                    });
+                }}
+                style={[
+                    styles.text,
+                    {
+                        textAlign: "center",
+                        color: Colors.blue,
+                        marginBottom: 10,
+                    },
+                ]}
+            >
+                Click to copy code
+            </Text>
             <View style={localStyles.codeContainer}>
-                {code.split("").map((character, index) => (
+                {codeString.split("").map((character, index) => (
                     <View style={localStyles.numberContainer} key={index}>
                         <Text style={localStyles.number}>{character}</Text>
                     </View>

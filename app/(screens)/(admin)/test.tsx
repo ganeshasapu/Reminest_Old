@@ -12,12 +12,10 @@ const Test = () => {
         if (phoneNumber) {
             try {
                 // Send the phone number to sign up with OTP
-                console.log(phoneNumber)
                 const { error, data } = await supabase.auth.signInWithOtp({
                     phone: phoneNumber,
                 });
 
-                console.log(error, data)
 
                 if (error) {
                     Alert.alert("Error", error.message);

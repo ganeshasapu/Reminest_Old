@@ -8,9 +8,8 @@ import BasicInput from '../../../components/BasicInput';
 import { AuthContext } from '../../authProvider';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import ArrowNavigation from '../../../components/ArrowNavigation';
-import { supabase } from '../../../supabase';
-import { UserType } from '../../../schema';
-import { User } from '@supabase/supabase-js';
+import { createUserProfile } from '../../../db';
+import { UsersType } from '../../../schema';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -24,45 +23,38 @@ const smsconfirmation = () => {
     const { verifyUser, sendVerification} = useContext(AuthContext);
     const router = useRouter();
 
-    async function createUserProfile(user: User){
-        if (!user) return;
 
-        const userData = {
-            id: user.id,
-            birthday: birthday,
-            phoneNumber: countryCode + phoneNumber,
-            firstName: firstName,
-            lastName: lastName,
-        } as UserType
+    async function register(){
+        try{
+            const user = await verifyUser(code)
 
-        const { error: createError, data } = await supabase
-            .from("users")
-            .insert(userData)
-            .match({ id: user.id });
+            if (!user) {
+                Alert.alert("Invalid verification code");
+                return
+            }
 
-        if (createError) {
-            Alert.alert("Error", createError.message);
+            if(login){
+                router.push("(screens)/feed")
+                return
+            }
+
+            const userData = {
+                id: user.id,
+                created_at: new Date,
+                first_name: firstName,
+                last_name: lastName,
+                birthday: birthday,
+                phone_number: countryCode + phoneNumber,
+            } as UsersType
+
+            createUserProfile(user, userData);
+            router.push("(screens)/(initializations)/familyLoginRegister");
+        } catch(error){
+            let message = "Unknown Error";
+            if (error instanceof Error) message = error.message;
+            console.error(message)
+            Alert.alert(message)
         }
-    }
-
-    const register = () => {
-        verifyUser(code)
-            .then((user) => {
-                if (!user) return;
-                if (login) {
-                    router.push("(screens)/feed")
-                }
-                else {
-                    createUserProfile(user);
-                    router.push("(screens)/(initializations)/familyLoginRegister");
-                }
-            })
-            .catch((error: any) => {
-                console.log(error);
-                if (error.code === "auth/invalid-verification-code") {
-                    Alert.alert("Invalid verification code");
-                }
-            });
     };
 
     useEffect(() => {

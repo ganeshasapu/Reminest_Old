@@ -35,28 +35,8 @@ const home = () => {
                         router.push("(screens)/(previews)/preview1");
                     }}
                 />
-                <Button
-                    title="Go to Initialization2"
-                    onPress={() => {
-                        router.push(
-                            "(screens)/(initializations)/initialization2"
-                        );
-                    }}
-                />
                 <TouchableOpacity style={styles.pictureButton} />
                 <Button title="Sign out" onPress={logoutUser} />
-                <Button
-                    title="Go to Camera Page"
-                    onPress={() => {
-                        router.push("(screens)/camera");
-                    }}
-                />
-                <Button
-                    title="Go to Video Page"
-                    onPress={() => {
-                        router.push("(screens)/video");
-                    }}
-                />
                 <Button
                     title="Go to Feed Page"
                     onPress={() => {

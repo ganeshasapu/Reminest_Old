@@ -6,33 +6,22 @@ import {
     Image,
     Dimensions,
     TouchableOpacity,
+    Alert,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Colors from "../../../constants/Colors";
 import { styles } from "../../stylesheets/styles";
 import { useRouter } from "expo-router";
-import {
-    doc,
-    collection,
-    addDoc,
-    updateDoc,
-    arrayUnion,
-} from "firebase/firestore";
-import {
-    ref,
-    uploadBytes,
-    getDownloadURL,
-    uploadBytesResumable,
-} from "firebase/storage";
-import { storage, db } from "../../firebase";
-import { mediaType, collections } from "../../../schema";
 import { AuthContext } from "../../authProvider";
-import { SaveFormat, manipulateAsync } from "expo-image-manipulator";
 import PlayButtonIcon from "../../../assets/vectors/PlayButtonIcon";
 import { PostContext } from "./_layout";
 import Loading from "../loading";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ArrowNavigation from "../../../components/ArrowNavigation";
+import { supabase } from "../../../supabase";
+import { createNewPost, fetchFamilyFromUserId } from "../../../db";
+import * as FileSystem from "expo-file-system"
+import { decode } from "base64-arraybuffer";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -43,11 +32,15 @@ const confirmPost = () => {
     const router = useRouter();
     const { user } = useContext(AuthContext);
 
+    const [familyId, setFamilyId] = useState<number | null>(null);
+
     if (!user) return <Text>No User Found</Text>;
 
-    const { thumbnailUri, imageUri, prompt, videoUri, collectionID } =
+    const { thumbnailUri, image, prompt, video, collectionID } =
         useContext(PostContext);
+
     const [ uploadProgress, setUploadProgress ] = useState(0);
+
 
     // const videoUri = "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4";
     // const thumbnailUri = "https://picsum.photos/seed/696/3000/2000";
@@ -56,109 +49,82 @@ const confirmPost = () => {
     // const prompt = "What is your favorite color?";
     // const collectionID = 1;
 
-    const savePhoto = async (): Promise<string> => {
-        if (!imageUri) return "";
-        const fileName = `photos/photo_${Date.now()}.jpg`;
+    useEffect(() =>{
+        async function getFamilyId(){
+            if (!user) return;
+            const family = await fetchFamilyFromUserId(user.id);
 
-        if (!imageUri) return "";
+            if (!family || !family.id) return;
+            setFamilyId(family.id);
+        }
+        getFamilyId();
+    }, [user])
 
-        const compressedImage = await manipulateAsync(imageUri, [], {
-            compress: 0.5,
-            format: SaveFormat.JPEG,
-        });
+    const saveImage = async (): Promise<string> => {
+        if (!image) return "";
 
-        const response = await fetch(compressedImage?.uri);
-        const blob = await response.blob();
-        const storageRef = ref(storage, fileName);
+        const base64 = await FileSystem.readAsStringAsync(image.uri, {encoding: 'base64'})
+        const filePath = "images/image_" + Date.now() + ".png";
+        const contentType = "image/png";
+        const {data, error} = await supabase.storage.from('PostMedia').upload(filePath, decode(base64), {contentType: contentType})
 
-        const snapshot = await uploadBytesResumable(storageRef, blob);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        return downloadURL;
+        if (!data) {
+            console.error("No Data found");
+            return "";
+        }
+
+        const { data: download } = await supabase.storage
+            .from("PostMedia")
+            .getPublicUrl(data.path);
+
+        if(error){
+            console.error(error)
+            return "";
+        }
+
+        return download.publicUrl;
+
     };
 
     const saveVideo = async (): Promise<string> => {
-        if (!videoUri) return "";
+        if (!video) return "";
 
-        const fileName = `videos/video_${Date.now()}.mov`;
+        const base64 = await FileSystem.readAsStringAsync(video, {
+            encoding: "base64",
+        });
+        const filePath = "videos/video_" + Date.now() + ".mp4";
+        const contentType = "video/mp4";
 
-        const response = await fetch(videoUri);
-        const blob = await response.blob();
-        const totalChunks = Math.ceil(blob.size / CHUNK_SIZE);
-        const chunks = [];
+        const { data, error } = await supabase.storage
+            .from("PostMedia")
+            .upload(filePath, decode(base64), { contentType: contentType });
 
-        for (let i = 0; i < totalChunks; i++) {
-            const start = i * CHUNK_SIZE;
-            const end = Math.min(start + CHUNK_SIZE, blob.size);
-            const chunk = blob.slice(start, end);
-            chunks.push(chunk);
+        if (!data) {
+            console.error("No Data found")
+            return ""
         }
 
+        const {data: download} = await supabase.storage.from("PostMedia").getPublicUrl(data.path)
 
-        const storageRef = ref(storage, fileName);
-
-        const uploadTask = uploadBytesResumable(storageRef, blob);
-        return new Promise<string>((resolve, reject) => {
-            uploadTask.on(
-                "state_changed",
-                (snapshot) => {
-                    // Handle progress updates if needed
-                    setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-                },
-                (error) => {
-                    console.log("Upload failed:", error);
-                    reject(error);
-                },
-                () => {
-                    // Upload completed successfully
-                    getDownloadURL(storageRef)
-                        .then((downloadURL) => {
-                            resolve(downloadURL);
-                        })
-                        .catch((error) => {
-                            reject(error);
-                        });
-                }
-            );
-        });
+        if (error) {
+            console.error(error);
+            return "";
+        }
+        return download.publicUrl;
     };
 
-    const createPost = async () => {
+    async function createPost(){
         const videoDownloadUrl = await saveVideo();
-        const photoDownloadUrl = await savePhoto();
+        const imageDownloadUrl = await saveImage();
 
-        if (!videoDownloadUrl) return;
+        if (!videoDownloadUrl || !familyId || !imageDownloadUrl || !user || !collectionID) return;
 
-        const media = [{ type: "VIDEO", url: videoDownloadUrl }, photoDownloadUrl ? { type: "IMAGE", url: photoDownloadUrl } : null];
-
-        const postData = {
-            like_count: 0,
-            media: media as mediaType[],
-            timestamp: Date.now(),
-            author: doc(db, collections.users, user.id),
-        };
-        const postCollectionRef = collection(db, collections.posts);
-        const postRef = await addDoc(postCollectionRef, postData);
-
-        const collectionRef = doc(
-            db,
-            collections.weekly_post_collections,
-            collectionID.toString()
-        );
-
-        await updateDoc(collectionRef, {
-            posts: arrayUnion(postRef),
-            usersResponded: arrayUnion(user.id),
-        });
-
-        const userRef = doc(db, collections.users, user.id);
-        await updateDoc(userRef, {
-            posts: arrayUnion(postRef),
-        });
+        await createNewPost(videoDownloadUrl, imageDownloadUrl, collectionID, user);
 
         router.push("(screens)/feed");
     };
 
-    if (!thumbnailUri || !imageUri || !prompt || !collectionID || !videoUri) {
+    if (!thumbnailUri || !image || !prompt || !collectionID || !video) {
         <SafeAreaView>
             <Loading />
         </SafeAreaView>;
@@ -183,9 +149,9 @@ const confirmPost = () => {
                         />
                     </View>
                     <View style={[localStyles.imageContainer, styles.shadow]}>
-                        {imageUri ? (
+                        {image ? (
                             <Image
-                                source={{ uri: imageUri }}
+                                source={{ uri: image.uri }}
                                 style={[localStyles.image]}
                             />
                         ) : (

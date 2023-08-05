@@ -1,40 +1,46 @@
 import React, { createContext, useState } from "react";
 import { Navigator, Slot } from "expo-router";
+import { ImagePickerAsset } from "expo-image-picker";
 
 
 interface PostContextProps {
-    videoUri: string;
-    setVideoUri: React.Dispatch<React.SetStateAction<string>>;
-    imageUri: string;
-    setImageUri: React.Dispatch<React.SetStateAction<string>>;
+    video: string;
+    setVideo: React.Dispatch<React.SetStateAction<string>>;
+    image: ImagePickerAsset | null;
+    setImage: React.Dispatch<React.SetStateAction<ImagePickerAsset | null>>;
     thumbnailUri: string;
     setThumbnailUri: React.Dispatch<React.SetStateAction<string>>;
     prompt: string;
     setPrompt: React.Dispatch<React.SetStateAction<string>>;
-    collectionID: string;
-    setCollectionID: React.Dispatch<React.SetStateAction<string>>;
+    highlight: string;
+    setHighlight: React.Dispatch<React.SetStateAction<string>>;
+    collectionID: number | null;
+    setCollectionID: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 export const PostContext = createContext({} as PostContextProps);
 
 const _layout = () => {
-    const [videoUri, setVideoUri] = useState("");
-    const [imageUri, setImageUri] = useState("");
+    const [video, setVideo] = useState("");
+    const [image, setImage] = useState<ImagePickerAsset | null>(null);
     const [thumbnailUri, setThumbnailUri] = useState("");
     const [prompt, setPrompt] = useState("");
-    const [collectionID, setCollectionID] = useState("");
+    const [highlight, setHighlight] = useState("");
+    const [collectionID, setCollectionID] = useState<number | null>(null);
 
     const postValue = {
-        videoUri,
-        setVideoUri,
-        imageUri,
-        setImageUri,
+        video,
+        setVideo,
+        image,
+        setImage,
         thumbnailUri,
         setThumbnailUri,
         prompt,
         setPrompt,
         collectionID,
         setCollectionID,
+        highlight,
+        setHighlight,
     };
 
 

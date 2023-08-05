@@ -11,17 +11,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Colors from "../../../constants/Colors";
 import { styles } from "../../stylesheets/styles";
 import { useLocalSearchParams } from "expo-router";
-import {
-    getDoc,
-    doc,
-} from "firebase/firestore";
-import { db, storage } from "../../firebase";
-import {
-    WeeklyPostsCollectionsType,
-    PostType,
-    UserType,
-    collections,
-} from "../../../schema";
 import { Camera, CameraType, VideoQuality } from "expo-camera";
 import { AuthContext } from "../../authProvider";
 import { PostContext } from "./_layout";
@@ -32,131 +21,67 @@ const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
 
 const recordVideo = () => {
-    const [collectionData, setCollectionData] =
-        useState<WeeklyPostsCollectionsType | null>(null);
+    const [permission, requestPermission] = Camera.useCameraPermissions();
     const [timer, setTimer] = useState<number>(300);
-    const [posts, setPosts] = useState<PostType[]>([]);
-    const [authors, setAuthors] = useState<UserType[]>([]);
-
     const cameraRef = useRef<Camera>(null);
     const [isRecording, setIsRecording] = useState<boolean>(false);
     const [cameraDirection, setCameraDirection] = useState<CameraType>(
         CameraType.front
     );
-    const [permission, requestPermission] = Camera.useCameraPermissions();
+    const { firstTimeHighlighted, firstTimePrompt, firstTimeCollectionId } = useLocalSearchParams();
 
 
 
     let lastPress = 0;
 
     const { user } = useContext(AuthContext);
-    const { videoUri, setVideoUri, setPrompt, setCollectionID, collectionID } = useContext(PostContext);
-
-
-    if (collectionID === ""){
-        setCollectionID(useLocalSearchParams().collectionId as string);
-    }
+    const { video, setVideo, setCollectionID, setPrompt, collectionID, prompt, highlight, setHighlight } = useContext(PostContext);
 
     let beforeHighlight,
-        highlight,
+        highlightedSection,
         afterHighlight = "";
 
+
     useEffect(() => {
-        requestPermission();
-         Camera.requestMicrophonePermissionsAsync();
+        async function getPermissions() {
+            requestPermission();
+            await Camera.requestMicrophonePermissionsAsync();
+        }
+        if (firstTimeCollectionId) {
+            setCollectionID(parseInt(firstTimeCollectionId as string));
+        }
+
+        if (firstTimePrompt) {
+            setPrompt(firstTimePrompt as string);
+        }
+
+        if (firstTimeHighlighted) {
+            setHighlight(firstTimeHighlighted as string);
+        }
+
+
+        getPermissions();
+
     }, [])
-
-    useEffect(() => {
-        if (!collectionID) return console.log("No collection ID");
-        const fetchWeeklyPostCollection = async () => {
-            const weeklyPostCollectionRef = await getDoc(
-                doc(
-                    db,
-                    collections.weekly_post_collections,
-                    collectionID.toString()
-                )
-            );
-            if (weeklyPostCollectionRef.exists()) {
-                setCollectionData(
-                    weeklyPostCollectionRef.data() as WeeklyPostsCollectionsType
-                );
-            }
-        };
-        fetchWeeklyPostCollection()
-
-    }, [collectionID]);
-
-    useEffect(() => {
-        if (!collectionData) return console.log("No collection data");
-        setPrompt(collectionData.prompt);
-        const retrievePostData = async () => {
-            if (collectionData?.posts.length > 0) {
-                const docSnap = await getDoc(collectionData.posts[0]);
-                if (docSnap.exists()) {
-                    // Document data is available
-                    const data = docSnap.data();
-                    setPosts([...posts, data as PostType]);
-                    // Use the 'data' object for further processing
-                } else {
-                    // Document doesn't exist
-                    console.log("No such document!");
-                }
-            }
-        };
-        retrievePostData();
-    }, [collectionData]);
-
-    useEffect(() => {
-        if (!posts) return console.log("No posts");
-        const retrieveAuthorData = async () => {
-            if (posts.length > 0) {
-                posts.forEach(async (post) => {
-                    const docSnap = await getDoc(post.author);
-                    if (docSnap.exists()) {
-                        // Document data is available
-                        const data = docSnap.data();
-                        console.log("Document data:", data);
-                        setAuthors((prevAuthors) => [
-                            ...prevAuthors,
-                            data as UserType,
-                        ]);
-                        // Use the 'data' object for further processing
-                    } else {
-                        // Document doesn't exist
-                        console.log("No such document!");
-                    }
-                });
-            }
-        };
-        retrieveAuthorData();
-    }, [posts]);
-
-    if (!collectionData || !posts || authors.length != posts.length) {
-        return <Loading />;
-    }
 
 
     const splitPrompt = (prompt: string) => {
-        const highlightIndex = prompt.indexOf(collectionData.highlightedWord);
+        const highlightIndex = prompt.indexOf(highlight as string);
         beforeHighlight = prompt.slice(0, highlightIndex);
-        highlight = prompt.slice(
+        highlightedSection = prompt.slice(
             highlightIndex,
-            highlightIndex + collectionData.highlightedWord.length
+            highlightIndex + highlight.length
         );
         afterHighlight = prompt.slice(
-            highlightIndex + collectionData.highlightedWord.length,
+            highlightIndex + highlight.length,
             prompt.length
         );
         return [beforeHighlight, highlight, afterHighlight];
     };
-    splitPrompt(collectionData.prompt);
+    splitPrompt(prompt as string);
 
     const stopRecording = async () => {
         cameraRef.current?.stopRecording();
-        setVideoUri(
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        );
-        setIsRecording(false);
     };
 
     const recordVideo = async () => {
@@ -181,7 +106,7 @@ const recordVideo = () => {
         cameraRef.current?.recordAsync(options).then((video) => {
             clearInterval(interval);
             setTimer(300);
-            setVideoUri(video.uri);
+            setVideo(video.uri);
             setIsRecording(false);
         });
     };
@@ -249,12 +174,13 @@ const recordVideo = () => {
         );
     }
 
+    if (!highlight || !prompt || !collectionID) {
+        return <Loading />;
+    }
+
     if (!user) return <Text>No User Found</Text>;
 
-    if (!collectionID) return <Text>No post collection</Text>;
-
-    if (videoUri) {
-        console.log("video preview")
+    if (video) {
         return (
             <VideoPreview />
         );
@@ -273,7 +199,7 @@ const recordVideo = () => {
                                     { backgroundColor: "white" },
                                 ]}
                             >
-                                {highlight}
+                                {highlightedSection}
                             </Text>
                             {afterHighlight}
                         </Text>

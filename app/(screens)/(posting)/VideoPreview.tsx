@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef } from 'react'
 import { Video, ResizeMode } from 'expo-av';
 import { styles } from '../../stylesheets/styles';
 import Colors from '../../../constants/Colors';
-import { PostContext, RouteContext } from './_layout';
+import { PostContext } from './_layout';
 import * as VideoThumbnails from "expo-video-thumbnails";
 import ArrowNavigation from '../../../components/ArrowNavigation';
 import { useRouter } from 'expo-router';
@@ -15,12 +15,12 @@ const VideoPreview = () => {
 
     const videoRef = useRef<Video>(null);
 
-    const { setThumbnailUri, videoUri, setVideoUri} = useContext(PostContext)
+    const { setThumbnailUri, video, setVideo} = useContext(PostContext)
 
     useEffect(() => {
        const generateThumbnail = async () => {
            try {
-               const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, {time: 1000});
+               const { uri } = await VideoThumbnails.getThumbnailAsync(video, {time: 1000});
                setThumbnailUri(uri);
            } catch (e) {
                console.warn(e);
@@ -41,7 +41,7 @@ const VideoPreview = () => {
                 {
                     text: "OK",
                     onPress: () => {
-                        setVideoUri("");
+                        setVideo("");
                     },
                 },
             ]
@@ -65,7 +65,7 @@ const VideoPreview = () => {
                       <Video
                           ref={videoRef}
                           style={localStyles.videoPreview}
-                          source={{ uri: videoUri }}
+                          source={{ uri: video }}
                           useNativeControls
                           resizeMode={ResizeMode.CONTAIN}
                           shouldPlay={true}

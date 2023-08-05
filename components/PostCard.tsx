@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import PostCardSlide from "./PostCardSlide";
 import PostCardCover from "./PostCardCover";
 import { PostCardCoverProps } from "./PostCardCover";
-import { DocumentReference, getDoc } from "firebase/firestore";
-import { PostType, UserType, mediaType } from "../schema";
+import { Media, PostsType } from "../schema";
+import { fetchMediaFromPostId, fetchPostsFromPostCollectionId } from "../db";
+import Loading from "../app/(screens)/loading";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -13,22 +14,23 @@ interface PostCardProps extends PostCardCoverProps {}
 
 const PostCard = ({
     userHasSubmitted,
-    post,
-    weeklyPostIndex,
-    familyData,
+    postCollection,
+    postCollectionIndex,
+    usersResponded,
 }: PostCardProps) => {
-    const [postsData, setPostsData] = useState<PostType[] | null>(null);
+    const [postsData, setPostsData] = useState<PostsType[] | null>(null);
     const [intervals, setIntervals] = React.useState(1);
     const [interval, setInterval] = React.useState(0);
     const [width, setWidth] = React.useState(0);
-
+    const [media, setMedia] = React.useState<Media[][] | null>(null)
 
     const init = (w: number) => {
-        if (!postsData){
+        if (!postsData) {
             return;
         }
         setWidth(w);
-    }
+    };
+
 
     const getInterval = (offset: any) => {
         for (let i = 1; i <= intervals; i++) {
@@ -39,39 +41,36 @@ const PostCard = ({
                 return i - 1;
             }
         }
-        return 0
+        return 0;
     };
 
-    useEffect(() => {
-        if (!post) {
-            return;
-        }
-        const fetchPostsData = async () => {
-            const postsData = await Promise.all(
-                post.posts.map((postId) => getDoc(postId))
-            );
-            setPostsData(postsData.map((doc) => doc.data() as PostType));
-        };
-        fetchPostsData();
-    }, [post]);
-
     useEffect(() =>{
-        if (!postsData) {
-            return;
+        async function fetchData() {
+            if (!postCollection.id) return
+            const posts = await fetchPostsFromPostCollectionId(postCollection.id)
+            setPostsData(posts)
+
+            if (!posts) return
+
+
+            let postMedia: Media[][] = []
+            if (userHasSubmitted){
+                for (let i = 0; i < posts.length; i++){
+                    const post_id = posts[i].id
+                    if (!post_id) return
+                    const media = await fetchMediaFromPostId(post_id)
+                    if (!media) return
+                    postMedia.push(media)
+                }
+            }
+            setMedia(postMedia)
         }
 
-        let count = 0;
+        fetchData()
+    }, [])
 
-        postsData.forEach((item) => {
-            count += item.media.length;
-        });
 
-        setIntervals(count + 1);
-    }, [postsData, width])
-
-    if (!post || !postsData) {
-        return null;
-    }
+    if (!postsData) return null
 
     return (
         <View style={localStyles.postContainer}>
@@ -84,19 +83,21 @@ const PostCard = ({
                 }}
                 scrollEventThrottle={300}
                 style={localStyles.scrollView}
-                onContentSizeChange={(w, h) => {init(w)}}
+                onContentSizeChange={(w, h) => {
+                    init(w);
+                }}
             >
                 <PostCardCover
                     userHasSubmitted={userHasSubmitted}
-                    post={post}
-                    weeklyPostIndex={weeklyPostIndex}
-                    familyData={familyData}
+                    postCollection={postCollection}
+                    postCollectionIndex={postCollectionIndex}
+                    usersResponded={usersResponded}
                 />
-                {userHasSubmitted
+                {userHasSubmitted && media && media.length > 0
                     ? postsData.map((post, index) =>
-                          post.media.map((media, index) => (
+                          media[index].map((media, index) => (
                               <PostCardSlide
-                                currentInterval={interval}
+                                  currentInterval={interval}
                                   post={post}
                                   media={media}
                                   key={index}

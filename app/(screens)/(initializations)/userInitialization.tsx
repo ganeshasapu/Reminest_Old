@@ -24,10 +24,9 @@ import {
 import { UserFormContext } from "./_layout";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ArrowNavigation from "../../../components/ArrowNavigation";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebase";
-import { collections } from "../../../schema";
 import { AuthContext } from "../../authProvider";
+import { supabase } from "../../../supabase";
+import { tables } from "../../../schema";
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -101,14 +100,17 @@ const userInitialization = () => {
             return false;
         }
 
-        const q = query(
-            collection(db, collections.users),
-            where("phoneNumber", "==", countryCode + phoneNumber)
-        );
+        const { data, error } = await supabase
+            .from(tables.users)
+            .select("phone_number")
+            .eq("phone_number", countryCode + phoneNumber);
 
-        const querySnapshot = await getDocs(q);
+        if (error){
+            console.error(error)
+            return false
+        }
 
-        if (!querySnapshot.empty) {
+        if (data.length > 0) {
             Alert.alert("This phone number is already registered");
             return false;
         }

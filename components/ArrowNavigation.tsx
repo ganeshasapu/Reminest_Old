@@ -56,7 +56,6 @@ const ArrowNavigation = (props: ArrowNavigationProps) => {
     async function previous() {
         if (left) {
             const ready = await leftCallback();
-            console.log(left.route)
             if (ready === false) return;
             router.push(left.route);
         }

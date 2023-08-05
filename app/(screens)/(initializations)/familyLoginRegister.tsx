@@ -6,10 +6,8 @@ import { UserFormContext } from "./_layout";
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
 import Icon from "@expo/vector-icons/FontAwesome";
 import { Redirect, useRouter } from 'expo-router'
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from "../../firebase"
-import { collections } from '../../../schema';
 import { AuthContext } from "../../authProvider";
+import { joinFamily } from '../../../db';
 
 const w = Dimensions.get("window").width;
 const h = Dimensions.get("window").height;
@@ -33,32 +31,22 @@ const familiyLoginRegister = () => {
         router.push("(screens)/(initializations)/familyName");
     };
 
-
-    async function joinFamily(familyCode: string) {
-        if (!user) return;
-        const familyRef = doc(db, collections.families, familyCode);
-        const familySnapshot = await getDoc(familyRef);
-        if (familySnapshot.data() === undefined || !familySnapshot.exists()) {
-            Alert.alert("Family does not exist");
-            return
-        }
-        const existingUsers = familySnapshot.data().users;
-        const updatedUsers = [...existingUsers, user.id];
-
-        return setDoc(familyRef, {users: updatedUsers}, {merge: true})
-
-    }
-
     useEffect(() => {
-        if (familyCode.length === CELL_COUNT) {
+        async function handleEnteredCode() {
             Keyboard.dismiss();
-            try {
-                const success = joinFamily(familyCode);
-                if (!success) return;
+            if (!user) {
+                Alert.alert("Error", "User not found");
+                return;
             }
-            catch(err){
-                console.log(err)
+            const success = await joinFamily(parseInt(familyCode), user);
+            if (!success) {
+                Alert.alert("Error", "Family not found");
+                return;
             }
+            router.push("(screens)/feed");
+        }
+        if (familyCode.length === CELL_COUNT) {
+           handleEnteredCode()
         }
     }, [familyCode]);
 

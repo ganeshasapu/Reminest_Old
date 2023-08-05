@@ -1,23 +1,16 @@
 import { StyleSheet, Text, TouchableOpacity, Dimensions, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import {
-    FamilyType,
-    UserType,
-    WeeklyPostsCollectionsType,
-    collections,
-} from "../schema";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import Colors from "../constants/Colors";
 import { styles } from "../app/stylesheets/styles";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../app/firebase";
 import LetterProfileImage from "./LetterProfileImage";
+import { PostCollectionsType, UsersType } from "../schema";
 
 export interface PostCardCoverProps {
     userHasSubmitted: boolean;
-    post: WeeklyPostsCollectionsType;
-    weeklyPostIndex: number;
-    familyData: FamilyType;
+    postCollection: PostCollectionsType;
+    postCollectionIndex: number;
+    usersResponded: UsersType[];
 }
 
 const w = Dimensions.get("window").width;
@@ -25,30 +18,11 @@ const h = Dimensions.get("window").height;
 
 const PostCardCover = ({
     userHasSubmitted,
-    post,
-    weeklyPostIndex,
-    familyData,
+    postCollection,
+    postCollectionIndex,
+    usersResponded,
 }: PostCardCoverProps) => {
     const router = useRouter();
-
-    const [respondedNames, setRespondedNames] = useState<string[]>([]);
-
-    useEffect(() => {
-        if (post) {
-            post.usersResponded.forEach(async (userId) => {
-                const userRef = await getDoc(
-                    doc(db, collections.users, userId)
-                );
-                if (userRef.exists()) {
-                    const user = userRef.data() as UserType;
-                    setRespondedNames((oldArray) => [
-                        ...oldArray,
-                        user.firstName,
-                    ]);
-                }
-            });
-        }
-    }, []);
 
     const namesToString = (names: string[]) => {
         if (names.length === 0) {
@@ -80,23 +54,26 @@ const PostCardCover = ({
         afterHighlight = "";
 
     const splitPrompt = (prompt: string) => {
-        const highlightIndex = prompt.indexOf(post.highlightedWord);
+        const highlightIndex = prompt.indexOf(postCollection.highlighted);
         beforeHighlight = prompt.slice(0, highlightIndex);
         highlight = prompt.slice(
             highlightIndex,
-            highlightIndex + post.highlightedWord.length
+            highlightIndex + postCollection.highlighted.length
         );
         afterHighlight = prompt.slice(
-            highlightIndex + post.highlightedWord.length,
+            highlightIndex + postCollection.highlighted.length,
             prompt.length
         );
         return [beforeHighlight, highlight, afterHighlight];
     };
-    splitPrompt(post.prompt);
+    splitPrompt(postCollection.prompt);
+
+    const userRespondedNames = usersResponded.map((user) => user.first_name)
+
 
     return userHasSubmitted ? (
         <View
-            key={weeklyPostIndex}
+            key={postCollectionIndex}
             style={[localStyles.postContainer, localStyles.submittedPost]}
         >
             <View style={localStyles.emptySpacing2} />
@@ -114,12 +91,12 @@ const PostCardCover = ({
             </Text>
 
             <Text style={localStyles.submittedNameText}>
-                {namesToString(respondedNames)}
+                {namesToString(userRespondedNames)}
             </Text>
             <View style={localStyles.profileContainer}>
-                {respondedNames.slice(0, 3).map((name, index) => (
+                {userRespondedNames.slice(0, 3).map((name, index) => (
                     <LetterProfileImage
-                        key={index + post.prompt}
+                        key={index + postCollection.prompt}
                         name={name}
                         index={index}
                     />
@@ -128,7 +105,7 @@ const PostCardCover = ({
         </View>
     ) : (
         <View
-            key={weeklyPostIndex}
+            key={postCollectionIndex}
             style={[localStyles.postContainer, localStyles.unsubmittedPost]}
         >
             <View style={localStyles.emptySpacing} />
@@ -146,12 +123,12 @@ const PostCardCover = ({
             </Text>
 
             <Text style={localStyles.unsubmittedNameText}>
-                {namesToString(respondedNames)}
+                {namesToString(userRespondedNames)}
             </Text>
             <View style={localStyles.profileContainer}>
-                {respondedNames.slice(0, 3).map((name, index) => (
+                {userRespondedNames.slice(0, 3).map((name, index) => (
                     <LetterProfileImage
-                        key={index + post.prompt}
+                        key={index + postCollection.prompt}
                         name={name}
                         index={index}
                     />
@@ -174,10 +151,10 @@ const PostCardCover = ({
                         router.push({
                             pathname: "(screens)/(posting)/recordVideo",
                             params: {
-                                collectionId:
-                                    familyData.weekly_posts_collections[
-                                        weeklyPostIndex
-                                    ],
+                                firstTimeCollectionId: postCollection.id,
+                                firstTimeHighlighted:
+                                    postCollection.highlighted,
+                                firstTimePrompt: postCollection.prompt,
                             },
                         })
                     }

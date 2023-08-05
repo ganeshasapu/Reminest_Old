@@ -25,7 +25,7 @@ const h = Dimensions.get("window").height;
 
 const addMedia = () => {
     const { user } = useContext(AuthContext);
-    const { imageUri, setImageUri } = useContext(PostContext);
+    const { image, setImage } = useContext(PostContext);
     const [mediaPermission, setMediaPermission] = useState<null | ImagePicker.MediaLibraryPermissionResponse>(null);
 
     const router = useRouter();
@@ -59,7 +59,7 @@ const addMedia = () => {
         });
 
         if (!result.canceled) {
-            setImageUri(result.assets[0].uri);
+            setImage(result.assets[0]);
         }
     };
 
@@ -68,7 +68,7 @@ const addMedia = () => {
     }
 
     async function goingBack(){
-        if (!imageUri) return true;
+        if (!image) return true;
         await Alert.alert(
             "Attention!",
             "If you go back you will lose the current image",
@@ -84,7 +84,7 @@ const addMedia = () => {
                     text: "OK",
                     onPress: () => {
                         router.push("/(screens)/(posting)/recordVideo");
-                        setImageUri("");
+                        setImage(null);
                         return true;
                     },
                 },
@@ -123,9 +123,9 @@ const addMedia = () => {
                     },
                 ]}
             >
-                {imageUri ? (
+                {image ? (
                     <Image
-                        source={{ uri: imageUri }}
+                        source={{ uri: image.uri }}
                         style={{
                             width: w * 0.9,
                             height: w * 0.9,
@@ -166,7 +166,7 @@ const addMedia = () => {
                     callback: goingBack,
                 }}
                 right={{
-                    visible: imageUri ? true : false,
+                    visible: image ? true : false,
                     route: "(screens)/(posting)/confirmPost",
                 }}
             />

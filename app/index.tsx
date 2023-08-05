@@ -3,6 +3,8 @@ import { Redirect } from 'expo-router'
 import { AuthContext } from "./authProvider";
 import Loading from './(screens)/loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ScreenOrientation from "expo-screen-orientation";
+
 
 const index = () => {
 
@@ -20,6 +22,7 @@ const index = () => {
   }
 
   useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
       checkLoginStatus();
       checkFirstTimeUser();
   }, []);
@@ -38,16 +41,15 @@ const index = () => {
     //   return <Redirect href="(screens)/(initializations)/signUpSignIn" />;
     //   return <Redirect href="(screens)/(admin)/test" />;
     return <Redirect href="(screens)/home" />;
-
   }
 
 
   return (
       // <Redirect href="(screens)/register" />
-    //   <Redirect href="(screens)/home" />
-      // <Redirect href="(screens)/(posting)/confirmPost" />
       <Redirect href="(screens)/home" />
-      // <Redirect href="(screens)/(initializations)/userInitialization" />
+      // <Redirect href="(screens)/(posting)/confirmPost" />
+    //   <Redirect href="(screens)/feed" />
+      // <Redirect href="(screens)/(initializations)/familyLoginRegister" />
       // <Redirect href="(screens)/(previews)/preview1" />
   );
 }

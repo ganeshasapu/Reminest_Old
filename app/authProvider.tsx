@@ -16,7 +16,7 @@ interface AuthContextProps {
 
 const AuthContext = createContext({} as AuthContextProps);
 
-const FirebaseProvider = ({ children }: any) => {
+const AuthProvider = ({ children }: any) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -46,7 +46,7 @@ const FirebaseProvider = ({ children }: any) => {
             }
             setLoading(false);
         } catch (error) {
-            console.log("Error checking login status:", error);
+            console.error("Error checking login status:", error);
         }
     };
 
@@ -102,4 +102,4 @@ const FirebaseProvider = ({ children }: any) => {
     );
 };
 
-export { AuthContext, FirebaseProvider };
+export { AuthContext, AuthProvider };
